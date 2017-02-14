@@ -10,10 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\NuGet.Core\NuGet.DependencyResolver.Core\NuGet.DependencyResolver.Core.csproj" />
+    <ProjectReference Include="..\..\..\src\NuGet.DependencyResolver.Core\NuGet.DependencyResolver.Core.csproj" />
     <ProjectReference Include="..\NuGet.DependencyResolver.Core.Tests.Utility\NuGet.DependencyResolver.Core.Tests.Utility.csproj" />
-    <ProjectReference Include="..\..\..\src\NuGet.Core\NuGet.Protocol.Test.Utility\NuGet.Protocol.Test.Utility.csproj" />
-    <ProjectReference Include="..\..\..\src\NuGet.Core\NuGet.Test.Utility\NuGet.Test.Utility.csproj" />
+    <ProjectReference Include="..\..\..\src\NuGet.Protocol.Test.Utility\NuGet.Protocol.Test.Utility.csproj" />
+    <ProjectReference Include="..\..\..\src\NuGet.Test.Utility\NuGet.Test.Utility.csproj" />
   </ItemGroup>
 
   <ItemGroup>

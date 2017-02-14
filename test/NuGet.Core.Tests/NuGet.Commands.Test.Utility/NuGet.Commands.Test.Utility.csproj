@@ -22,8 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\NuGet.Core\NuGet.Commands\NuGet.Commands.csproj" />
-    <ProjectReference Include="..\..\..\src\NuGet.Core\NuGet.Protocol.Test.Utility\NuGet.Protocol.Test.Utility.csproj" />
+    <ProjectReference Include="..\..\..\src\NuGet.Commands\NuGet.Commands.csproj" />
+    <ProjectReference Include="..\..\..\src\NuGet.Protocol.Test.Utility\NuGet.Protocol.Test.Utility.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">

@@ -11,8 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\NuGet.Core\NuGet.Frameworks\NuGet.Frameworks.csproj" />
-    <ProjectReference Include="..\..\..\src\NuGet.Core\NuGet.Packaging\NuGet.Packaging.csproj" />
+    <ProjectReference Include="..\..\..\src\NuGet.Frameworks\NuGet.Frameworks.csproj" />
+    <ProjectReference Include="..\..\..\src\NuGet.Packaging\NuGet.Packaging.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\NuGet.Core\NuGet.Test.Utility\NuGet.Test.Utility.csproj" />
-    <ProjectReference Include="..\..\..\src\NuGet.Core\SynchronizationTestApp\SynchronizationTestApp.csproj" />
+    <ProjectReference Include="..\..\..\src\NuGet.Test.Utility\NuGet.Test.Utility.csproj" />
+    <ProjectReference Include="..\..\..\src\SynchronizationTestApp\SynchronizationTestApp.csproj" />
   </ItemGroup>
 
   <ItemGroup>

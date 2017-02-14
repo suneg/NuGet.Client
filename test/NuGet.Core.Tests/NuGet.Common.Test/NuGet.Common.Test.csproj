@@ -11,8 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\NuGet.Core\NuGet.Common\NuGet.Common.csproj" />
-    <ProjectReference Include="..\..\..\src\NuGet.Core\NuGet.Test.Utility\NuGet.Test.Utility.csproj" />
+    <ProjectReference Include="..\..\..\src\NuGet.Common\NuGet.Common.csproj" />
+    <ProjectReference Include="..\..\..\src\NuGet.Test.Utility\NuGet.Test.Utility.csproj" />
   </ItemGroup>
 
   <ItemGroup>

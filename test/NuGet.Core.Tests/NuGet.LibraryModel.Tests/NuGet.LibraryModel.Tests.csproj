@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\NuGet.Core\NuGet.ProjectModel\NuGet.ProjectModel.csproj" />
+    <ProjectReference Include="..\..\..\src\NuGet.ProjectModel\NuGet.ProjectModel.csproj" />
   </ItemGroup>
 
   <ItemGroup>

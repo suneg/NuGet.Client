@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\NuGet.Core\NuGet.Build.Tasks.Pack.Library\NuGet.Build.Tasks.Pack.Library.csproj" />
-    <ProjectReference Include="..\..\..\src\NuGet.Core\NuGet.Test.Utility\NuGet.Test.Utility.csproj" />
+    <ProjectReference Include="..\..\..\src\NuGet.Build.Tasks.Pack.Library\NuGet.Build.Tasks.Pack.Library.csproj" />
+    <ProjectReference Include="..\..\..\src\NuGet.Test.Utility\NuGet.Test.Utility.csproj" />
     <ProjectReference Include="..\NuGet.Commands.Test.Utility\NuGet.Commands.Test.Utility.csproj" />
     <ProjectReference Include="..\NuGet.DependencyResolver.Core.Tests.Utility\NuGet.DependencyResolver.Core.Tests.Utility.csproj" />
   </ItemGroup>

@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\NuGet.Core\NuGet.Resolver\NuGet.Resolver.csproj" />
+    <ProjectReference Include="..\..\..\src\NuGet.Resolver\NuGet.Resolver.csproj" />
   </ItemGroup>
 
   <ItemGroup>
