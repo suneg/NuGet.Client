@@ -52,6 +52,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\NuGet.Core\NuGet.PackageManagement\NuGet.PackageManagement.csproj">
+      <Project>{394aeb96-493c-4839-a5ac-8d93cd2fad40}</Project>
+      <Name>NuGet.PackageManagement</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\NuGet.Core\NuGet.ProjectManagement\NuGet.ProjectManagement.csproj">
+      <Project>{2995463d-9849-4bd3-8a87-0b7e1c5e6812}</Project>
+      <Name>NuGet.ProjectManagement</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NuGet.SolutionRestoreManager.Interop\NuGet.SolutionRestoreManager.Interop.csproj">
       <Project>{4003E1AB-70DE-4B9C-8999-96160EE91D84}</Project>
       <Name>NuGet.SolutionRestoreManager.Interop</Name>

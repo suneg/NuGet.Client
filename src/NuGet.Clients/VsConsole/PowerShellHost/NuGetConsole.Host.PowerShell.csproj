@@ -97,6 +97,10 @@
     <None Include="Scripts\NuGet.Format.ps1xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\NuGet.Core\NuGet.Resolver\NuGet.Resolver.csproj">
+      <Project>{51AA27A9-B8B4-458F-9211-E6889B441573}</Project>
+      <Name>NuGet.Resolver</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\PackageManagement.UI\NuGet.PackageManagement.UI.csproj">
       <Project>{538adefd-2170-40a9-a2c5-ec8369cfe490}</Project>
       <Name>NuGet.PackageManagement.UI</Name>
