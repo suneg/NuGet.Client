@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Reverting props change
 
   <!-- Default project configuration -->
   <PropertyGroup>
@@ -110,6 +113,7 @@
     <AssemblyAttributesPath>$(IntermediateOutputPath)AssemblyInfo.g.cs</AssemblyAttributesPath>
     <GenerateAdditionalSources>true</GenerateAdditionalSources>
   </PropertyGroup>
+
   <ItemGroup>
     <!--
       AssemblyVersion and AssemblyFileVersion attributes are generated automatically for every build.
