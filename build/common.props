@@ -111,7 +111,7 @@
   <PropertyGroup>
     <!-- Turn on dynamic assembly attribute generation -->
     <AssemblyAttributesPath>$(IntermediateOutputPath)AssemblyInfo.g.cs</AssemblyAttributesPath>
-    <GenerateAdditionalSources>false</GenerateAdditionalSources>
+    <GenerateAdditionalSources>true</GenerateAdditionalSources>
   </PropertyGroup>
 
   <ItemGroup>
