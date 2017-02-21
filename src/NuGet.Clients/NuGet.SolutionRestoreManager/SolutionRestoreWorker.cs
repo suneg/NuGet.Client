@@ -26,6 +26,8 @@ namespace NuGet.SolutionRestoreManager
         private const int IdleTimeoutMs = 400;
         private const int RequestQueueLimit = 150;
         private const int PromoteAttemptsLimit = 150;
+        private const int DelayAutoRestoreTime = 1500;
+        private const int DelayAutoRestoreRetries = 5;
 
         private readonly IServiceProvider _serviceProvider;
         private readonly AsyncLazy<ErrorListProvider> _errorListProvider;
@@ -294,6 +296,9 @@ namespace NuGet.SolutionRestoreManager
 
                         token.ThrowIfCancellationRequested();
 
+                        var retries = 0;
+                        var currentExpectedNominations = 0;
+
                         // Drains the queue
                         while (!_pendingRequests.Value.IsCompleted
                             && !token.IsCancellationRequested)
@@ -301,6 +306,25 @@ namespace NuGet.SolutionRestoreManager
                             SolutionRestoreRequest discard;
                             if (!_pendingRequests.Value.TryTake(out discard, IdleTimeoutMs, token))
                             {
+                                // check if there are pending nominations
+                                currentExpectedNominations = _solutionManager.Value.GetExpectedProjectsNomination();
+                                if (currentExpectedNominations == 0)
+                                {
+                                    // if we've got all the nominations then continue with the auto restore
+                                    break;
+                                }
+                            }
+
+                            // if we're still expecting some nominations and also haven't reached our max timeout
+                            // then delay it for 1500 msec and try again.
+                            if (currentExpectedNominations != 0 && retries < DelayAutoRestoreRetries)
+                            {
+                                retries++;
+                                await Task.Delay(DelayAutoRestoreTime);
+                            }
+                            else
+                            {
+                                // we're still missing some nominations but don't delay it indefinitely and let auto restore fail.
                                 break;
                             }
                         }

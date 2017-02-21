@@ -46,5 +46,11 @@ namespace NuGet.PackageManagement.VisualStudio
         /// </summary>
         /// <returns>Deferred prokects file path.</returns>
         Task<IEnumerable<string>> GetDeferredProjectsFilePathAsync();
+
+        /// <summary>
+        /// Returns number of nominations still pending for .net core projects.
+        /// </summary>
+        /// <returns>Number of pending nominations.</returns>
+        int GetExpectedProjectsNomination();
     }
 }

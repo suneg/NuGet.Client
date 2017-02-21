@@ -294,6 +294,33 @@ namespace NuGet.PackageManagement.VisualStudio
             return projects;
         }
 
+        public int GetExpectedProjectsNomination()
+        {
+#if VS14
+            // for VS14, always return 0 since nominations don't apply there.
+            return 0;
+#else
+            var cpsProjects = GetNuGetProjects().OfType<CpsPackageReferenceProject>().ToList();
+
+            // count for nominated projects so far
+            int nominatedProjects = 0;
+
+            foreach (var cpsProject in cpsProjects)
+            {
+                // check if this .Net core project is nominated or not, and accordingly increase counter.
+                DependencyGraphSpec projectRestoreInfo;
+                if (_projectSystemCache.TryGetProjectRestoreInfo(cpsProject.MSBuildProjectPath, out projectRestoreInfo) &&
+                    projectRestoreInfo != null)
+                {
+                    nominatedProjects++;
+                }
+            }
+
+            // return the difference between total .net core projects vs nominated
+            return cpsProjects.Count - nominatedProjects;
+#endif
+        }
+
         public void SaveProject(NuGetProject nuGetProject)
         {
             NuGetUIThreadHelper.JoinableTaskFactory.Run(async delegate
@@ -1026,7 +1053,7 @@ namespace NuGet.PackageManagement.VisualStudio
         }
 
 
-        #region IVsSelectionEvents
+#region IVsSelectionEvents
 
         public int OnCmdUIContextChanged(uint dwCmdUICookie, int fActive)
         {
