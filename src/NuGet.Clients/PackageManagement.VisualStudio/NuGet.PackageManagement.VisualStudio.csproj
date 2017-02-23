@@ -11,7 +11,6 @@
     <AssemblyName>NuGet.PackageManagement.VisualStudio</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <CodeAnalysisRuleSet>..\..\..\NuGet.ruleset</CodeAnalysisRuleSet>
-    <PackagesDirectory>$(UserProfile)\.nuget\packages</PackagesDirectory>
     <ResolveNuGetPackages>true</ResolveNuGetPackages>
     <SkipValidatePackageReferences>true</SkipValidatePackageReferences>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
@@ -268,7 +267,7 @@
       <Name>NuGet.VisualStudio.Facade</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(EnlistmentRoot)\build\netcore.props" />  
+  <Import Project="$(EnlistmentRoot)\build\netcore.props" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(EnlistmentRoot)\build\common.targets" />
   <Import Project="$(EnlistmentRoot)\build\sign.targets" />
