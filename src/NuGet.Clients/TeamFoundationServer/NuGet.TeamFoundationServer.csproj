@@ -31,6 +31,7 @@
     <Reference Include="System.Security" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PackageManagement.UI\NuGet.PackageManagement.UI.csproj" />
     <ProjectReference Include="..\PackageManagement.VisualStudio\NuGet.PackageManagement.VisualStudio.csproj">
       <Project>{306cddfa-ff0b-4299-930c-9ec6c9308160}</Project>
       <Name>NuGet.PackageManagement.VisualStudio</Name>
