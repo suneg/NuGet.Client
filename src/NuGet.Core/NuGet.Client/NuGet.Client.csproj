@@ -43,5 +43,6 @@
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
     <DefineConstants>$(DefineConstants);IS_CORECLR</DefineConstants>
   </PropertyGroup>
+  <Import Project="..\..\..\build\common.netcore.targets"/>
 
 </Project>
