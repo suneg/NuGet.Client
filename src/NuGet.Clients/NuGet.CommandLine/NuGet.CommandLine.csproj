@@ -6,6 +6,7 @@
   <PropertyGroup>
     <RootNamespace>NuGet.CommandLine</RootNamespace>
     <GenerateAssemblyInfo Condition="'$(GenerateAssemblyInfo)' == ''">false</GenerateAssemblyInfo>
+    <AssemblyName>NuGet</AssemblyName>
     <AssemblyTitle>NuGet Command Line</AssemblyTitle>
     <AssemblyDescription>NuGet Command Line</AssemblyDescription>
     <OutputType>Exe</OutputType>
