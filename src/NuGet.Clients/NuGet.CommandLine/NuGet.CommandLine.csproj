@@ -8,6 +8,7 @@
     <GenerateAssemblyInfo Condition="'$(GenerateAssemblyInfo)' == ''">false</GenerateAssemblyInfo>
     <AssemblyTitle>NuGet Command Line</AssemblyTitle>
     <AssemblyDescription>NuGet Command Line</AssemblyDescription>
+    <OutputType>Exe</OutputType>
     <ComVisible>false</ComVisible>
   </PropertyGroup>
   <ItemGroup>
