@@ -182,12 +182,8 @@ Function Install-NuGet {
     )
     if ($Force -or -not (Test-Path $NuGetExe)) {
         Trace-Log 'Downloading nuget.exe'
-        if($CI){
-            wget https://dist.nuget.org/win-x86-commandline/v3.5.0/nuget.exe -OutFile $NuGetExe
-        }
-        else {
-            wget https://dist.nuget.org/win-x86-commandline/latest-prerelease/nuget.exe -OutFile $NuGetExe
-        }
+
+        wget https://dist.nuget.org/win-x86-commandline/latest-prerelease/nuget.exe -OutFile $NuGetExe
     }
 
     # Display nuget info
@@ -205,8 +201,8 @@ Function Install-DotnetCLI {
         @{
             Root = $CLIRoot
             DotNetExe = Join-Path $CLIRoot 'dotnet.exe'
-            DotNetInstallUrl = 'https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0-preview2/scripts/obtain/dotnet-install.ps1'
-            Version = '1.0.0-preview2-003131'
+            DotNetInstallUrl = 'https://raw.githubusercontent.com/dotnet/cli/58b0566d9ac399f5fa973315c6827a040b7aae1f/scripts/obtain/dotnet-install.ps1'
+            Version = '1.0.0-rc4-004913'
         }
     }
     else {
@@ -264,17 +260,12 @@ Function Get-MSBuildRoot {
 
 Function Get-MSBuildExe {
     param(
-        [ValidateSet(14,15)]
+        [ValidateSet(15)]
         [int]$MSBuildVersion
     )
     # Get the highest msbuild version if version was not specified
     if (-not $MSBuildVersion) {
-        $MSBuildExe = Get-MSBuildExe 15
-        if (Test-Path $MSBuildExe) {
-            return $MSBuildExe
-        }
-
-        return Get-MSBuildExe 14
+        return Get-MSBuildExe 15
     }
 
     $MSBuildRoot = Get-MSBuildRoot $MSBuildVersion
