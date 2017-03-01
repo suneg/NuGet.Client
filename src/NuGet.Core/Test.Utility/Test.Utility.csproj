@@ -1,22 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="..\..\..\build\test.props" />
+  
   <PropertyGroup>
     <Copyright>Copyright .NET Foundation. All rights reserved.</Copyright>
     <VersionPrefix>4.0.0</VersionPrefix>
     <TargetFramework>net45</TargetFramework>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>Test.Utility</AssemblyName>
-    <PackageId>Test.Utility</PackageId>
-    <PackageProjectUrl>https://github.com/NuGet/NuGet.Client</PackageProjectUrl>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/NuGet/NuGet.Client/dev/LICENSE.txt</PackageLicenseUrl>
-    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
-    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
-    <GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
+    <GenerateAssemblyInfo Condition="'$(GenerateAssemblyInfo)' == ''">false</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,7 +26,6 @@
     <PackageReference Include="Microsoft.VisualStudio.ProjectSystem.Interop" Version="1.0.0-*">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="xunit" Version="2.2.0-beta5-build3474" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
@@ -42,8 +34,6 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Net.Http" />
   </ItemGroup>

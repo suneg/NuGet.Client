@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+  <Import Project="..\..\..\build\test.props" />
   <PropertyGroup>
     <VersionPrefix>4.0.0</VersionPrefix>
     <TargetFramework>net46</TargetFramework>
@@ -26,11 +26,6 @@
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Runtime" />
-    <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Net.Http" />
   </ItemGroup>

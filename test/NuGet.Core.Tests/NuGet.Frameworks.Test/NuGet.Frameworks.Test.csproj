@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+  <Import Project="..\..\..\build\test.props" />
   <PropertyGroup>
     <VersionPrefix>4.0.0</VersionPrefix>
     <TargetFrameworks>netcoreapp1.0;net46</TargetFrameworks>
@@ -36,11 +36,6 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
     <PackageReference Include="Moq" Version="4.2.1510.2205" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Runtime" />
-    <Reference Include="System.Threading.Tasks" />
   </ItemGroup>
 
 </Project>

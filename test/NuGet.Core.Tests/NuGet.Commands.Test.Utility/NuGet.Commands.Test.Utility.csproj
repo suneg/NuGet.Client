@@ -26,11 +26,6 @@
     <ProjectReference Include="..\..\..\src\NuGet.Core\NuGet.Protocol.Test.Utility\NuGet.Protocol.Test.Utility.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net46' ">
     <DefineConstants>$(DefineConstants);IS_DESKTOP</DefineConstants>
   </PropertyGroup>
