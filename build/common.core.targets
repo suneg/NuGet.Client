@@ -8,6 +8,6 @@
   <Target Name="GetCopyToOutputDirectoryItems" />
   <Target Name="SatelliteDllsProjectOutputGroup" />
   <Target Name="DebugSymbolsProjectOutputGroup" />
-  <Import Project="..\..\..\build\sign.targets" />
+  <Import Project="sign.targets" />
   
 </Project>
