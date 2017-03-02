@@ -47,5 +47,6 @@
     <PackageReference Include="System.Threading.Thread" Version="4.0.0" />
   </ItemGroup>
 
-  <Import Project="..\..\..\build\common.netcore.targets"/>
+  <Import Project="..\..\..\build\common.core.props"/>
+  <Import Project="..\..\..\build\common.core.targets"/>
 </Project>

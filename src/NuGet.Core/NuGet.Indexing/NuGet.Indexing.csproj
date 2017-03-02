@@ -40,5 +40,6 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
 
-  <Import Project="..\..\..\build\common.netcore.targets"/>
+  <Import Project="..\..\..\build\common.core.props"/>
+  <Import Project="..\..\..\build\common.core.targets"/>
 </Project>

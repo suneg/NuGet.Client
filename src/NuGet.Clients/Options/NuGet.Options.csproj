@@ -100,7 +100,7 @@
   <ItemGroup>
     <None Include="project.json" />
   </ItemGroup>
-  <Import Project="$(EnlistmentRoot)\build\netcore.props" />
+  <Import Project="$(EnlistmentRoot)\build\common.imports.props" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(EnlistmentRoot)\build\common.targets" />
   <Import Project="$(EnlistmentRoot)\build\sign.targets" />

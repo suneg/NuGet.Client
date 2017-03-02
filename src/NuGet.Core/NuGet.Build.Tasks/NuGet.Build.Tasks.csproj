@@ -45,5 +45,6 @@
     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="0.1.0-preview-00038-160914" />
   </ItemGroup>
 
-  <Import Project="..\..\..\build\common.netcore.targets"/>
+  <Import Project="..\..\..\build\common.core.props"/>
+  <Import Project="..\..\..\build\common.core.targets"/>
 </Project>

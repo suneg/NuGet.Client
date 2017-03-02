@@ -49,5 +49,6 @@
     <PackageReference Include="System.Net.Http" Version="4.1.1" />
   </ItemGroup>
 
-  <Import Project="..\..\..\build\common.netcore.targets"/>
+  <Import Project="..\..\..\build\common.core.props"/>
+  <Import Project="..\..\..\build\common.core.targets"/>
 </Project>

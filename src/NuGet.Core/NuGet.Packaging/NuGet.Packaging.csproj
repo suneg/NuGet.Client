@@ -67,5 +67,6 @@
     <PackageReference Include="System.IO.Compression" Version="4.1.0" />
   </ItemGroup>
 
-  <Import Project="..\..\..\build\common.netcore.targets"/>
+  <Import Project="..\..\..\build\common.core.props"/>
+  <Import Project="..\..\..\build\common.core.targets"/>
 </Project>

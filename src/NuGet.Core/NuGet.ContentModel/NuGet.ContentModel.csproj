@@ -40,5 +40,6 @@
     <PackageReference Include="System.ObjectModel" Version="4.0.12" />
   </ItemGroup>
 
-  <Import Project="..\..\..\build\common.netcore.targets"/>
+  <Import Project="..\..\..\build\common.core.props"/>
+  <Import Project="..\..\..\build\common.core.targets"/>
 </Project>
