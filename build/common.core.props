@@ -40,7 +40,7 @@
 
   <!-- SemVer -->
   <PropertyGroup>
-    <VersionSuffix Condition=" '$(VersionSuffix)' == '' ">$(ReleaseLabel).$(BuildNumber)</VersionSuffix>
+    <VersionSuffix Condition=" '$(VersionSuffix)' == '' ">$(ReleaseLabel)-$(BuildNumber)</VersionSuffix>
     <VersionPrefix Condition=" '$(VersionPrefix)' == '' ">4.3.0</VersionPrefix>
   </PropertyGroup>
 

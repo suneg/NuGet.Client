@@ -320,63 +320,63 @@ Function Build-ClientsProjectHelper {
         [switch]$Rebuild
     )
 
-    $opts = , $SolutionOrProject
-    $restoreOpts = , $SolutionOrProject
+    $buildArgs = , $SolutionOrProject
+    $restoreArgs = , $SolutionOrProject
 
-    $restoreOpts += "/t:Restore"
+    $restoreArgs += "/t:Restore"
 
     if ($Rebuild) {
-        $opts += "/t:Rebuild"
+        $buildArgs += "/t:Rebuild"
     }
 
     if ($IsSolution -And $ToolsetVersion -eq 14) {
-        $opts += "/p:Configuration=$Configuration VS14"
-        $restoreOpts += "/p:Configuration=$Configuration VS14"
+        $buildArgs += "/p:Configuration=$Configuration VS14"
+        $restoreArgs += "/p:Configuration=$Configuration VS14"
     }
     else {
-        $opts += "/p:Configuration=$Configuration"
-        $restoreOpts += "/p:Configuration=$Configuration"
+        $buildArgs += "/p:Configuration=$Configuration"
+        $restoreArgs += "/p:Configuration=$Configuration"
     }
 
-    $opts += "/p:ReleaseLabel=$ReleaseLabel;BuildNumber=$(Format-BuildNumber $BuildNumber)"
-    $restoreOpts += "/p:ReleaseLabel=$ReleaseLabel;BuildNumber=$(Format-BuildNumber $BuildNumber)"
+    $buildArgs += "/p:ReleaseLabel=$ReleaseLabel;BuildNumber=$(Format-BuildNumber $BuildNumber)"
+    $restoreArgs += "/p:ReleaseLabel=$ReleaseLabel;BuildNumber=$(Format-BuildNumber $BuildNumber)"
 
     if ($ExcludeBuildNumber) {
-        $opts += "/p:ExcludeBuildNumber=true"
-        $restoreOpts += "/p:ExcludeBuildNumber=true"
+        $buildArgs += "/p:ExcludeBuildNumber=true"
+        $restoreArgs += "/p:ExcludeBuildNumber=true"
     }
 
     foreach($key in $Parameters.keys) {
-        $opts +="/p:$key=" + $Parameters[$key]
-        $restoreOpts +="/p:$key=" + $Parameters[$key]
+        $buildArgs +="/p:$key=" + $Parameters[$key]
+        $restoreArgs +="/p:$key=" + $Parameters[$key]
     }
 
-    $opts += "/p:VisualStudioVersion=${ToolsetVersion}.0"
-    $restoreOpts += "/p:VisualStudioVersion=${ToolsetVersion}.0"
+    $buildArgs += "/p:VisualStudioVersion=${ToolsetVersion}.0"
+    $restoreArgs += "/p:VisualStudioVersion=${ToolsetVersion}.0"
     
-    $opts += "/tv:${ToolsetVersion}.0"
-    $restoreOpts += "/tv:${ToolsetVersion}.0"
+    $buildArgs += "/tv:${ToolsetVersion}.0"
+    $restoreArgs += "/tv:${ToolsetVersion}.0"
 
-    $opts += "/p:CreateNupkgs=true"
-    $restoreOpts += "/p:CreateNupkgs=true"
+    $buildArgs += "/p:CreateNupkgs=true"
+    $restoreArgs += "/p:CreateNupkgs=true"
 
     # Parallel build
-    $opts += "/m"
-    $restoreOpts += "/m"
+    $buildArgs += "/m"
+    $restoreArgs += "/m"
 
     if (-not $VerbosePreference) {
-        $opts += '/verbosity:minimal'
-        $restoreOpts += '/v:q'
+        $buildArgs += '/v:minimal'
+        $restoreArgs += '/v:q'
     }
 
-    Trace-Log "$MSBuildExe $restoreOpts"
-    & $MSBuildExe $restoreOpts
+    Trace-Log "$MSBuildExe $restoreArgs"
+    & $MSBuildExe $restoreArgs
     if (-not $?) {
         Error-Log "Restore of $SolutionOrProject failed. Code: $LASTEXITCODE"
     }
 
-    Trace-Log "$MSBuildExe $opts"
-    & $MSBuildExe $opts
+    Trace-Log "$MSBuildExe $buildArgs"
+    & $MSBuildExe $buildArgs
     if (-not $?) {
         Error-Log "Build of $SolutionOrProject failed. Code: $LASTEXITCODE"
     }
