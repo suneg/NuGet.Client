@@ -5,7 +5,7 @@ $DefaultMSBuildVersion = 15
 
 # The pack version can be inferred from the .nuspec files on disk. This is only necessary as long
 # as the following issue is open: https://github.com/NuGet/Home/issues/3530
-$PackageReleaseVersion = "4.0.1"
+$PackageReleaseVersion = "4.3.0"
 
 $NuGetClientRoot = Split-Path -Path $PSScriptRoot -Parent
 $CLIRoot = Join-Path $NuGetClientRoot cli
@@ -356,6 +356,9 @@ Function Build-ClientsProjectHelper {
     
     $opts += "/tv:${ToolsetVersion}.0"
     $restoreOpts += "/tv:${ToolsetVersion}.0"
+
+    $opts += "/p:CreateNupkgs=true"
+    $restoreOpts += "/p:CreateNupkgs=true"
 
     # Parallel build
     $opts += "/m"

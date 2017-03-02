@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\..\build\common.core.props" />
 
   <PropertyGroup>
-    <Copyright>Copyright .NET Foundation. All rights reserved.</Copyright>
-    <VersionPrefix>4.0.0</VersionPrefix>
     <TargetFrameworks>net45;netstandard1.3</TargetFrameworks>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <GenerateAssemblyInfo Condition="'$(GenerateAssemblyInfo)' == ''">false</GenerateAssemblyInfo>
@@ -22,17 +21,9 @@
     <Reference Include="System.IO.Compression" />
   </ItemGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
-    <DefineConstants>$(DefineConstants);IS_DESKTOP</DefineConstants>
-  </PropertyGroup>
-
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <Compile Remove="compiler\resources\*" />
   </ItemGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
-    <DefineConstants>$(DefineConstants);IS_CORECLR</DefineConstants>
-  </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
     <Compile Remove="compiler\resources\*" />
@@ -54,4 +45,6 @@
   <ItemGroup>
     <PackageReference Include="xunit" Version="2.2.0" />
   </ItemGroup>
+
+  <Import Project="..\..\..\build\common.core.targets"/>
 </Project>
