@@ -17,9 +17,6 @@ Path to a code signing certificate for delay-sigining (optional)
 .PARAMETER NuGetPFXPath
 Path to a code signing certificate for delay-sigining (optional)
 
-.PARAMETER SkipXProj
-Skips building the NuGet.Core XProj projects
-
 .PARAMETER SkipVS14
 Skips building binaries targeting Visual Studio "14" (released as Visual Studio 2015)
 
@@ -62,8 +59,6 @@ param (
     [string]$MSPFXPath,
     [Alias('nugetpfx')]
     [string]$NuGetPFXPath,
-    [Alias('sx')]
-    [switch]$SkipXProj,
     [Alias('s14')]
     [switch]$SkipVS14,
     [Alias('s15')]
@@ -118,15 +113,9 @@ Invoke-BuildStep 'Set delay signing options' {
     } `
     -ev +BuildErrors
 
-Invoke-BuildStep 'Building NuGet.Core projects' {
-        Build-CoreProjects $Configuration $ReleaseLabel $BuildNumber -CI:$CI
-    } `
-    -skip:$SkipXProj `
-    -ev +BuildErrors
-
-## Building the VS15 Tooling solution
-Invoke-BuildStep 'Building NuGet.Clients projects - VS15 Toolset' {
-        Build-ClientsProjects $Configuration $ReleaseLabel $BuildNumber -ToolsetVersion 15
+# Building the VS15 Tooling solution
+Invoke-BuildStep 'Building NuGet.sln - VS15 Toolset' {
+        Build-Solution $Configuration $ReleaseLabel $BuildNumber -ToolsetVersion 15
     } `
     -skip:$SkipVS15 `
     -ev +BuildErrors
@@ -145,39 +134,11 @@ Invoke-BuildStep 'Building NuGet.Tools.vsix for VS Insertion - VS15 Toolset' {
     -ev +BuildErrors
 
 ## Building the VS14 Tooling solution
-Invoke-BuildStep 'Building NuGet.Clients projects - VS14 Toolset' {
-        Build-ClientsProjects $Configuration $ReleaseLabel $BuildNumber -ToolsetVersion 14
+Invoke-BuildStep 'Building NuGet.sln - VS14 Toolset' {
+        Build-Solution $Configuration $ReleaseLabel $BuildNumber -ToolsetVersion 14
     } `
     -skip:$SkipVS14 `
     -ev +BuildErrors
-
-Invoke-BuildStep 'Publishing NuGet.Clients packages - VS14 Toolset' {
-        Publish-ClientsPackages $Configuration $ReleaseLabel $BuildNumber -ToolsetVersion 14 -KeyFile $MSPFXPath -CI:$CI
-    } `
-    -skip:($Fast -or $SkipVS14) `
-    -ev +BuildErrors
-
-Invoke-BuildStep 'Publishing the VS14 EndToEnd test package' {
-        param($Configuration)
-        $EndToEndScript = Join-Path $PSScriptRoot scripts\cibuild\CreateEndToEndTestPackage.ps1 -Resolve
-        $OutDir = Join-Path $Artifacts VS14
-        & $EndToEndScript -c $Configuration -tv 14 -out $OutDir
-    } `
-    -args $Configuration `
-    -skip:($Fast -or $SkipVS14) `
-    -ev +BuildErrors
-
-Invoke-BuildStep 'Publishing the VS15 EndToEnd test package' {
-        param($Configuration)
-        $EndToEndScript = Join-Path $PSScriptRoot scripts\cibuild\CreateEndToEndTestPackage.ps1 -Resolve
-        $OutDir = Join-Path $Artifacts VS15
-        & $EndToEndScript -c $Configuration -tv 15 -out $OutDir
-    } `
-    -args $Configuration `
-    -skip:($Fast -or $SkipVS15) `
-    -ev +BuildErrors
-
-Trace-Log ('-' * 60)
 
 ## Calculating Build time
 $endTime = [DateTime]::UtcNow

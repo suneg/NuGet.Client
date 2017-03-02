@@ -21,4 +21,9 @@
     <DefineConstants>$(DefineConstants);IS_DESKTOP</DefineConstants>
   </PropertyGroup>
 
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
 </Project>

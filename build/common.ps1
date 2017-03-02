@@ -182,12 +182,8 @@ Function Install-NuGet {
     )
     if ($Force -or -not (Test-Path $NuGetExe)) {
         Trace-Log 'Downloading nuget.exe'
-        if($CI){
-            wget https://dist.nuget.org/win-x86-commandline/v3.5.0/nuget.exe -OutFile $NuGetExe
-        }
-        else {
-            wget https://dist.nuget.org/win-x86-commandline/latest-prerelease/nuget.exe -OutFile $NuGetExe
-        }
+
+        wget https://dist.nuget.org/win-x86-commandline/latest-prerelease/nuget.exe -OutFile $NuGetExe
     }
 
     # Display nuget info
@@ -205,8 +201,8 @@ Function Install-DotnetCLI {
         @{
             Root = $CLIRoot
             DotNetExe = Join-Path $CLIRoot 'dotnet.exe'
-            DotNetInstallUrl = 'https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0-preview2/scripts/obtain/dotnet-install.ps1'
-            Version = '1.0.0-preview2-003131'
+            DotNetInstallUrl = 'https://raw.githubusercontent.com/dotnet/cli/58b0566d9ac399f5fa973315c6827a040b7aae1f/scripts/obtain/dotnet-install.ps1'
+            Version = '1.0.0-rc4-004913'
         }
     }
     else {
@@ -264,17 +260,12 @@ Function Get-MSBuildRoot {
 
 Function Get-MSBuildExe {
     param(
-        [ValidateSet(14,15)]
+        [ValidateSet(15)]
         [int]$MSBuildVersion
     )
     # Get the highest msbuild version if version was not specified
     if (-not $MSBuildVersion) {
-        $MSBuildExe = Get-MSBuildExe 15
-        if (Test-Path $MSBuildExe) {
-            return $MSBuildExe
-        }
-
-        return Get-MSBuildExe 14
+        return Get-MSBuildExe 15
     }
 
     $MSBuildRoot = Get-MSBuildRoot $MSBuildVersion
@@ -290,6 +281,102 @@ Function Test-MSBuildVersionPresent {
     $MSBuildExe = Get-MSBuildExe $MSBuildVersion
 
     Test-Path $MSBuildExe
+}
+
+Function Build-Solution {
+    [CmdletBinding()]
+    param(
+        [string]$Configuration = $DefaultConfiguration,
+        [string]$ReleaseLabel = $DefaultReleaseLabel,
+        [int]$BuildNumber = (Get-BuildNumber),
+        [ValidateSet(14, 15)]
+        [int]$ToolsetVersion = $DefaultMSBuildVersion,
+        [switch]$SkipRestore
+    )
+
+    $solutionPath = Join-Path $NuGetClientRoot NuGet.sln -Resolve
+
+    # Build the solution
+    Build-ClientsProjectHelper `
+        -SolutionOrProject $solutionPath `
+        -Configuration $Configuration `
+        -ReleaseLabel $ReleaseLabel `
+        -BuildNumber $BuildNumber `
+        -ToolsetVersion $ToolsetVersion `
+        -IsSolution
+}
+
+Function Build-ClientsProjectHelper {
+    param(
+        [string]$SolutionOrProject,
+        [string]$Configuration = $DefaultConfiguration,
+        [string]$ReleaseLabel = $DefaultReleaseLabel,
+        [int]$BuildNumber = (Get-BuildNumber),
+        [ValidateSet(14,15)]
+        [int]$ToolsetVersion = $DefaultMSBuildVersion,
+        [hashtable]$Parameters,
+        [switch]$IsSolution,
+        [switch]$ExcludeBuildNumber,
+        [switch]$Rebuild
+    )
+
+    $opts = , $SolutionOrProject
+    $restoreOpts = , $SolutionOrProject
+
+    $restoreOpts += "/t:Restore"
+
+    if ($Rebuild) {
+        $opts += "/t:Rebuild"
+    }
+
+    if ($IsSolution -And $ToolsetVersion -eq 14) {
+        $opts += "/p:Configuration=$Configuration VS14"
+        $restoreOpts += "/p:Configuration=$Configuration VS14"
+    }
+    else {
+        $opts += "/p:Configuration=$Configuration"
+        $restoreOpts += "/p:Configuration=$Configuration"
+    }
+
+    $opts += "/p:ReleaseLabel=$ReleaseLabel;BuildNumber=$(Format-BuildNumber $BuildNumber)"
+    $restoreOpts += "/p:ReleaseLabel=$ReleaseLabel;BuildNumber=$(Format-BuildNumber $BuildNumber)"
+
+    if ($ExcludeBuildNumber) {
+        $opts += "/p:ExcludeBuildNumber=true"
+        $restoreOpts += "/p:ExcludeBuildNumber=true"
+    }
+
+    foreach($key in $Parameters.keys) {
+        $opts +="/p:$key=" + $Parameters[$key]
+        $restoreOpts +="/p:$key=" + $Parameters[$key]
+    }
+
+    $opts += "/p:VisualStudioVersion=${ToolsetVersion}.0"
+    $restoreOpts += "/p:VisualStudioVersion=${ToolsetVersion}.0"
+    
+    $opts += "/tv:${ToolsetVersion}.0"
+    $restoreOpts += "/tv:${ToolsetVersion}.0"
+
+    # Parallel build
+    $opts += "/m"
+    $restoreOpts += "/m"
+
+    if (-not $VerbosePreference) {
+        $opts += '/verbosity:minimal'
+        $restoreOpts += '/v:q'
+    }
+
+    Trace-Log "$MSBuildExe $restoreOpts"
+    & $MSBuildExe $restoreOpts
+    if (-not $?) {
+        Error-Log "Restore of $SolutionOrProject failed. Code: $LASTEXITCODE"
+    }
+
+    Trace-Log "$MSBuildExe $opts"
+    & $MSBuildExe $opts
+    if (-not $?) {
+        Error-Log "Build of $SolutionOrProject failed. Code: $LASTEXITCODE"
+    }
 }
 
 Function Test-BuildEnvironment {
@@ -443,7 +530,7 @@ Function Restore-SolutionPackages{
     param(
         [Alias('path')]
         [string]$SolutionPath,
-        [ValidateSet(4, 12, 14, 15)]
+        [ValidateSet(15)]
         [int]$MSBuildVersion
     )
     $opts = , 'restore'
@@ -496,106 +583,9 @@ Function Restore-XProjects {
     }
 }
 
-Function Find-XProjects([string]$XProjectsLocation) {
-    Get-ChildItem $XProjectsLocation -Recurse -Filter '*.xproj' |
+Function Find-Projects([string]$ProjectsLocation) {
+    Get-ChildItem $ProjectsLocation -Recurse -Filter '*.csproj' |
         %{ Split-Path $_.FullName -Parent }
-}
-
-Function Invoke-DotnetPack {
-    [CmdletBinding()]
-    param(
-        [parameter(ValueFromPipeline=$True, Mandatory=$True, Position=0)]
-        [string[]]$XProjectLocations,
-        [Alias('config')]
-        [string]$Configuration = $DefaultConfiguration,
-        [Alias('label')]
-        [string]$ReleaseLabel,
-        [Alias('build')]
-        [int]$BuildNumber,
-        [Alias('out')]
-        [string]$NupkgOutput
-    )
-    Begin {
-        $BuildNumber = Format-BuildNumber $BuildNumber
-
-        # Setting the Dotnet AssemblyFileVersion
-        $env:DOTNET_ASSEMBLY_FILE_VERSION=$BuildNumber
-    }
-    Process {
-        $XProjectLocations | % {
-            $projectName = Split-Path $_ -Leaf
-
-            $opts = @()
-
-            if ($VerbosePreference) {
-                $opts += '-v'
-            }
-
-            $opts += 'pack', $_, '--configuration', $Configuration
-
-            $versionSuffix = ''
-
-            if ($ReleaseLabel -And $BuildNumber) {
-                $versionSuffix = "$ReleaseLabel-$BuildNumber"
-            } elseif ($ReleaseLabel -Ne 'rtm') {
-                $versionSuffix = $ReleaseLabel
-            }
-
-            if ($versionSuffix) {
-                $opts += '--version-suffix', $versionSuffix
-            }
-
-            if ($NupkgOutput) {
-                $opts += '--output', $NupkgOutput
-            }
-
-            $opts += '--build-base-path', $Artifacts
-            $opts += '--serviceable'
-
-            Trace-Log "$DotNetExe $opts"
-
-            & $DotNetExe $opts
-            if (-not $?) {
-                Error-Log "Pack failed @""$_"". Code: $LASTEXITCODE"
-            }
-        }
-    }
-}
-
-Function Invoke-DotnetBuild {
-    [CmdletBinding()]
-    param(
-        [parameter(ValueFromPipeline=$True, Mandatory=$True, Position=0)]
-        [string[]]$XProjectLocations,
-        [Alias('config')]
-        [string]$Configuration = $DefaultConfiguration
-    )
-    Begin {
-        $BuildNumber = Format-BuildNumber $BuildNumber
-
-        # Setting the Dotnet AssemblyFileVersion
-        $env:DOTNET_ASSEMBLY_FILE_VERSION=$BuildNumber
-    }
-    Process {
-        $XProjectLocations | % {
-            $projectName = Split-Path $_ -Leaf
-
-            $opts = @()
-
-            if ($VerbosePreference) {
-                $opts += '-v'
-            }
-
-            $opts += 'build', $_, '--configuration', $Configuration
-
-            Trace-Log "$DotNetExe $opts"
-
-            & $DotNetExe $opts
-            if (-not $?) {
-                Error-Log "Build failed @""$_"". Code: $LASTEXITCODE"
-            }
-        }
-    }
 }
 
 Function Publish-CoreProject {
@@ -628,41 +618,6 @@ Function Publish-CoreProject {
     if (-not $?) {
         Error-Log "Publish project failed @""$XProjectLocation"". Code: $LASTEXITCODE"
     }
-}
-
-Function Build-CoreProjects {
-    [CmdletBinding()]
-    param(
-        [string]$Configuration = $DefaultConfiguration,
-        [string]$ReleaseLabel = $DefaultReleaseLabel,
-        [int]$BuildNumber = (Get-BuildNumber),
-        [switch]$SkipRestore,
-        [switch]$CI
-    )
-    $XProjectsLocation = Join-Path $NuGetClientRoot src\NuGet.Core -Resolve
-    $xprojects = Find-XProjects $XProjectsLocation
-
-    if (-not $SkipRestore) {
-        $xprojects | Restore-XProjects
-    }
-
-    # Build .nupkgs for MyGet (which have release label and build number)
-    $xprojects | Invoke-DotnetPack -config $Configuration -label $ReleaseLabel -build $BuildNumber -out $Nupkgs
-
-    if ($CI) {
-        # Build .nupkgs for release (which have no build number). This will re-use the build from the last
-        # step because the --build-base-path is the same.
-        $xprojects | Invoke-DotnetPack -config $Configuration -label $ReleaseLabel -out $ReleaseNupkgs
-    }
-
-    # Publish NuGet.CommandLine.XPlat
-    $PublishLocation = Join-Path $Artifacts "NuGet.CommandLine.XPlat\publish"
-    Trace-Log "Publishing XPlat project to '$PublishLocation'"
-    $XPlatProject = Join-Path $NuGetClientRoot 'src\NuGet.Core\NuGet.CommandLine.XPlat'
-    Publish-CoreProject $XPlatProject $PublishLocation $Configuration
-
-    #Pack NuGet.Build.Tasks.Pack using the nuspec file and copy to the artifacts and artifacts\ReleaseNupkgs folder
-    Pack-NuGetBuildTasksPack -config $Configuration -label $ReleaseLabel -buildNum $BuildNumber -CI:$CI
 }
 
 Function Pack-NuGetBuildTasksPack {
@@ -853,44 +808,6 @@ Function Test-CoreProjectsHelper {
     $xtests | Test-XProject -Configuration $Configuration
 }
 
-Function Build-ClientsProjects {
-    [CmdletBinding()]
-    param(
-        [string]$Configuration = $DefaultConfiguration,
-        [string]$ReleaseLabel = $DefaultReleaseLabel,
-        [int]$BuildNumber = (Get-BuildNumber),
-        [ValidateSet(14,15)]
-        [int]$ToolsetVersion = $DefaultMSBuildVersion,
-        [switch]$SkipRestore
-    )
-
-    $solutionPath = Join-Path $NuGetClientRoot NuGet.Clients.sln -Resolve
-
-    if (-not $SkipRestore) {
-        # Override VisualStudioVersion for following solution restore operation.
-        # Needed to lock correct VS15/VS14 packages in the facade project.
-        $vsv = $env:VisualStudioVersion
-        $env:VisualStudioVersion = "${ToolsetVersion}.0"
-
-        # Restore packages for NuGet.Tooling solution using default msbuild
-        try {
-            Restore-SolutionPackages -path $solutionPath
-        }
-        finally {
-            $env:VisualStudioVersion = $vsv
-        }
-    }
-
-    # Build the solution
-    Build-ClientsProjectHelper `
-        -SolutionOrProject $solutionPath `
-        -Configuration $Configuration `
-        -ReleaseLabel $ReleaseLabel `
-        -BuildNumber $BuildNumber `
-        -ToolsetVersion $ToolsetVersion `
-        -IsSolution
-}
-
 Function Publish-ClientsPackages {
     [CmdletBinding()]
     param(
@@ -1013,57 +930,6 @@ Function New-NuGetPackage {
 
     Trace-Log "$NuGetExe $opts"
     & $NuGetExe $opts
-}
-
-Function Build-ClientsProjectHelper {
-    param(
-        [string]$SolutionOrProject,
-        [string]$Configuration = $DefaultConfiguration,
-        [string]$ReleaseLabel = $DefaultReleaseLabel,
-        [int]$BuildNumber = (Get-BuildNumber),
-        [ValidateSet(14,15)]
-        [int]$ToolsetVersion = $DefaultMSBuildVersion,
-        [hashtable]$Parameters,
-        [switch]$IsSolution,
-        [switch]$ExcludeBuildNumber,
-        [switch]$Rebuild
-    )
-
-    $opts = , $SolutionOrProject
-
-    if ($Rebuild) {
-        $opts += "/t:Rebuild"
-    }
-
-    if ($IsSolution -And $ToolsetVersion -eq 14) {
-        $opts += "/p:Configuration=$Configuration VS14"
-    }
-    else {
-        $opts += "/p:Configuration=$Configuration"
-    }
-
-    $opts += "/p:ReleaseLabel=$ReleaseLabel;BuildNumber=$(Format-BuildNumber $BuildNumber)"
-
-    if ($ExcludeBuildNumber) {
-        $opts += "/p:ExcludeBuildNumber=true"
-    }
-
-    foreach($key in $Parameters.keys) {
-        $opts+="/p:$key=" + $Parameters[$key]
-    }
-
-    $opts += "/p:VisualStudioVersion=${ToolsetVersion}.0"
-    $opts += "/tv:${ToolsetVersion}.0"
-
-    if (-not $VerbosePreference) {
-        $opts += '/verbosity:minimal'
-    }
-
-    Trace-Log "$MSBuildExe $opts"
-    & $MSBuildExe $opts
-    if (-not $?) {
-        Error-Log "Build of NuGet.Clients.sln failed. Code: $LASTEXITCODE"
-    }
 }
 
 Function Test-ClientsProjects {
