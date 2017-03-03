@@ -40,8 +40,3 @@ NuGet.Repositories.dll
 NuGet.Resolver.dll
 NuGet.RuntimeModel.dll
 NuGet.Versioning.dll
-
-# 3rd party dlls to keep
-Lucene.Net.dll
-Microsoft.Web.XmlTransform.dll
-Newtonsoft.Json.dll
