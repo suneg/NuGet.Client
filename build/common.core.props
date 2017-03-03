@@ -31,7 +31,7 @@
   <PropertyGroup Condition="'$(ReleaseLabel)' == ''">
     <ReleaseLabel>zlocal</ReleaseLabel>
   </PropertyGroup>
-
+  
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
     <TypeScriptCompileBlocked>True</TypeScriptCompileBlocked>
@@ -42,6 +42,7 @@
   <PropertyGroup>
     <VersionSuffix Condition=" '$(VersionSuffix)' == '' ">$(ReleaseLabel)-$(BuildNumber)</VersionSuffix>
     <VersionPrefix Condition=" '$(VersionPrefix)' == '' ">4.3.0</VersionPrefix>
+    <FileVersion>$(VersionPrefix).$(BuildNumber)</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' OR '$(TargetFramework)' == 'net46' ">
