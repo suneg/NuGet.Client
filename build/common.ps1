@@ -291,7 +291,8 @@ Function Build-Solution {
         [int]$BuildNumber = (Get-BuildNumber),
         [ValidateSet(14, 15)]
         [int]$ToolsetVersion = $DefaultMSBuildVersion,
-        [switch]$SkipRestore
+        [switch]$SkipRestore,
+        [switch]$Rebuild
     )
 
     $solutionPath = Join-Path $NuGetClientRoot NuGet.sln -Resolve
@@ -303,7 +304,9 @@ Function Build-Solution {
         -ReleaseLabel $ReleaseLabel `
         -BuildNumber $BuildNumber `
         -ToolsetVersion $ToolsetVersion `
-        -IsSolution
+        -IsSolution `
+        -Rebuild
+        
 }
 
 Function Build-ClientsProjectHelper {
@@ -365,7 +368,7 @@ Function Build-ClientsProjectHelper {
     $restoreArgs += "/m"
 
     if (-not $VerbosePreference) {
-        $buildArgs += '/v:minimal'
+        $buildArgs += '/v:m'
         $restoreArgs += '/v:q'
     }
 
@@ -881,7 +884,7 @@ Function Publish-ClientsPackages {
             -Configuration $Configuration
     }
 
-    # Pack the NuGet.VisualStudio project with the build number and release label.
+    # Pack the NuGet.VisualStudio project with the buildbuild number and release label.
     $projectDir = [io.path]::combine($NuGetClientRoot, "src", "NuGet.Clients", "NuGet.VisualStudio")
     $projectNuspec = Join-Path $projectDir "NuGet.VisualStudio.nuspec"
     $projectInputDir = [io.path]::combine($Artifacts, "NuGet.VisualStudio", "${ToolsetVersion}.0", "${Configuration}")

@@ -65,7 +65,8 @@ param (
     [switch]$SkipVS15,
     [Alias('f')]
     [switch]$Fast,
-    [switch]$CI
+    [switch]$CI,
+    [switch]$Rebuild
 )
 
 . "$PSScriptRoot\build\common.ps1"
@@ -113,13 +114,34 @@ Invoke-BuildStep 'Set delay signing options' {
     } `
     -ev +BuildErrors
 
-    
-. "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\MSBuild\15.0\bin\msbuild.exe" /t:Restore C:\BuildAgent\work\f79e4fe5c1c3a59c\NuGet.Client\NuGet.sln /p:Configuration=Release /p:Version=4.3.0 /p:VisualStudioVersion=15.0 /tv:15.0 /m /p:NUGET_PFX_PATH=$NuGetPFXPath /v:m
+## Building the VS15 Tooling solution
+Invoke-BuildStep 'Building NuGet.sln - VS15 Toolset' {
+        $solutionPath = Join-Path $NuGetClientRoot NuGet.sln -Resolve
+        Build-ClientsProjectHelper `
+            -SolutionOrProject $solutionPath `
+            -Configuration $Configuration `
+            -ReleaseLabel $ReleaseLabel `
+            -BuildNumber $BuildNumber `
+            -Parameters @{'NUGET_PFX_PATH'=$NuGetPFXPath} `
+            -ToolsetVersion 15 `
+            -IsSolution `
+            -Rebuild
+    } `
+    -skip:$SkipVS15 `
+    -ev +BuildErrors
 
-Write-Host "C:\BuildAgent\work\f79e4fe5c1c3a59c\NuGet.Client\NuGet.sln /p:Configuration=Release /p:Version=4.3.0 /p:VisualStudioVersion=15.0 /tv:15.0 /p:CreateNupkgs=true /m /p:NUGET_PFX_PATH=$NuGetPFXPath /t:Rebuild /v:m"
-
-. "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\MSBuild\15.0\bin\msbuild.exe" C:\BuildAgent\work\f79e4fe5c1c3a59c\NuGet.Client\NuGet.sln /p:Configuration=Release /p:Version=4.3.0 /p:VisualStudioVersion=15.0 /tv:15.0 /p:CreateNupkgs=true /m /p:NUGET_PFX_PATH=$NuGetPFXPath /t:Rebuild /v:m
-
+## Building the VS15 NuGet.Tools.vsix for VS insertion
+Invoke-BuildStep 'Building NuGet.Tools.vsix for VS Insertion - VS15 Toolset' {
+        Build-ClientsProjectHelper `
+        -SolutionOrProject (Join-Path $NuGetClientRoot .\src\NuGet.Clients\NuGet.Tools\NuGet.Tools.csproj -Resolve)`
+        -Configuration $Configuration `
+        -ReleaseLabel $ReleaseLabel `
+        -BuildNumber $BuildNumber `
+        -Parameters @{'IsInsertable'='true'} `
+        -ToolsetVersion 15 `
+    } `
+    -skip:($SkipVS15 -or -not $CI) `
+    -ev +BuildErrors
 
 ## Calculating Build time
 $endTime = [DateTime]::UtcNow
