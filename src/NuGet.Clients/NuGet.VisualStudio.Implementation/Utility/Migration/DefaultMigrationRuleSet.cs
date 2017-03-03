@@ -10,12 +10,11 @@ namespace NuGet.VisualStudio.Migration
     {
         private IMigrationRule[] Rules => new IMigrationRule[]
         {
-            //new MigrateJsonPropertiesRule(),
-            //new MigrateRuntimeOptionsRule(),
-            //new MigrateRuntimesRule(),
-            //new MigratePackageDependenciesAndToolsRule(),
-            //new CleanOutputProjectRule(),
-            //new SaveOutputProjectRule(),
+            new MigrateJsonPropertiesRule(),
+            new MigrateRuntimesRule(),
+            new MigratePackageDependenciesAndToolsRule(),
+            new CleanOutputProjectRule(),
+            new SaveOutputProjectRule(),
         };
 
         public void Apply(MigrationSettings migrationSettings, MigrationRuleInputs migrationRuleInputs)
