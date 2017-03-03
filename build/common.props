@@ -74,7 +74,7 @@
       Semantic Version. See http://semver.org for full details.
       Update for every public release.
     -->
-    <SemanticVersion>4.0.1</SemanticVersion>
+    <SemanticVersion>4.3.0</SemanticVersion>
     <PreReleaseVersion>0</PreReleaseVersion>
   </PropertyGroup>
   
@@ -120,7 +120,8 @@
   <PropertyGroup>
     <!-- Turn on dynamic assembly attribute generation -->
     <AssemblyAttributesPath>$(IntermediateOutputPath)AssemblyInfo.g.cs</AssemblyAttributesPath>
-    <GenerateAdditionalSources>false</GenerateAdditionalSources>
+    <GenerateAdditionalSources>true</GenerateAdditionalSources>
+    <Version>4.3.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
