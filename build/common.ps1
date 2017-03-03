@@ -341,8 +341,10 @@ Function Build-ClientsProjectHelper {
         $restoreArgs += "/p:Configuration=$Configuration"
     }
 
-    $buildArgs += "/p:ReleaseLabel=$ReleaseLabel /p:BuildNumber=$(Format-BuildNumber $BuildNumber)"
-    $restoreArgs += "/p:ReleaseLabel=$ReleaseLabel /p:BuildNumber=$(Format-BuildNumber $BuildNumber)"
+    $buildArgs += "/p:ReleaseLabel=$ReleaseLabel"
+    $buildArgs += "/p:BuildNumber=$(Format-BuildNumber $BuildNumber)"
+    $restoreArgs += "/p:ReleaseLabel=$ReleaseLabel"
+    $restoreArgs += "/p:BuildNumber=$(Format-BuildNumber $BuildNumber)"
 
     if ($ExcludeBuildNumber) {
         $buildArgs += "/p:ExcludeBuildNumber=true"
