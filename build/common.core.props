@@ -42,7 +42,11 @@
   <PropertyGroup>
     <VersionSuffix Condition=" '$(VersionSuffix)' == '' ">$(ReleaseLabel)-$(BuildNumber)</VersionSuffix>
     <VersionPrefix Condition=" '$(VersionPrefix)' == '' ">4.3.0</VersionPrefix>
-    <FileVersion>$(VersionPrefix).$(BuildNumber)</FileVersion>
+    <AssemblyVersion Condition=" '$(AssemblyVersion)' == '' ">$(VersionPrefix).$(BuildNumber)</AssemblyVersion>
+    <AssemblyFileVersion Condition=" '$(AssemblyFileVersion)' == '' ">$(VersionPrefix).$(BuildNumber)</AssemblyFileVersion>
+    <AssemblyCompany Condition=" '$(AssemblyCompany)' == '' ">Microsoft Corporation</AssemblyCompany>
+    <AssemblyProduct Condition=" '$(AssemblyProduct)' == '' ">NuGet</AssemblyProduct>
+    <AssemblyCopyright Condition=" '$(AssemblyCopyright)' == '' ">Microsoft Corporation. All rights reserved.</AssemblyCopyright>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' OR '$(TargetFramework)' == 'net46' ">
