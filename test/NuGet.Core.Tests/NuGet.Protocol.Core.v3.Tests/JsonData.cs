@@ -4088,5 +4088,13 @@ namespace NuGet.Protocol.Tests
           }";
         #endregion
 
+        #region TempApiKeyResponse
+        public const string tempApiKeyJsonData = @"{
+            ""Key"": ""tempkey"",
+            ""Expires"": ""2017-03-09T16:47:16"",
+            ""Scope"": ""test""
+            }";
+        #endregion
+
     }
 }
