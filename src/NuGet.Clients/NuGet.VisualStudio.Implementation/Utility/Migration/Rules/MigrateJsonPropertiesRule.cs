@@ -4,9 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NuGet.VisualStudio.Implementation.Utility.Migration.Rules
+namespace NuGet.VisualStudio.Migration
 {
-    class MigrateJsonPropertiesRule
+    class MigrateJsonPropertiesRule : IMigrationRule
     {
+        public void Apply(MigrationSettings migrationSettings, MigrationRuleInputs ruleInputs)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

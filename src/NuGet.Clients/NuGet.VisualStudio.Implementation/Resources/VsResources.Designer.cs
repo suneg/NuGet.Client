@@ -70,6 +70,15 @@ namespace NuGet.VisualStudio.Implementation.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Expected element to be of type {0}, but got {1}..
+        /// </summary>
+        internal static string ExpectedElementToBeOfTypeNotTypeError {
+            get {
+                return ResourceManager.GetString("ExpectedElementToBeOfTypeNotTypeError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The specified framework name &apos;{0}&apos; must be .NETStandard..
         /// </summary>
         internal static string InvalidNetStandardFramework {

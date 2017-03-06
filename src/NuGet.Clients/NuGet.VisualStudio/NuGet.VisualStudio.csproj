@@ -77,7 +77,6 @@
     <Compile Include="Extensibility\IVsPackageRestorer.cs" />
     <Compile Include="Extensibility\IVsPackageUninstaller.cs" />
     <Compile Include="Extensibility\IVsPackageProjectMetadata.cs" />
-    <Compile Include="Extensibility\IVsProjectJsonMigrator.cs" />
     <Compile Include="Extensibility\IVsSemanticVersionComparer.cs" />
     <Compile Include="Extensibility\VsPackageEventHandler.cs" />
     <Compile Include="IVsPackageManagerProvider.cs" />
@@ -91,6 +90,9 @@
     <Compile Include="LegacyTypes\PackageSaveModes.cs" />
     <Compile Include="LegacyTypes\SemanticVersion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(VisualStudioVersion)' == '15.0'">
+    <Compile Include="Extensibility\IVsProjectJsonMigrator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="install.ps1" />

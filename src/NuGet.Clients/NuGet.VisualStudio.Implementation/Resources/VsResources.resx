@@ -176,4 +176,7 @@
     <comment>Arguments in order:
 The string representation of the user's input framework name.</comment>
   </data>
+  <data name="ExpectedElementToBeOfTypeNotTypeError" xml:space="preserve">
+    <value>Expected element to be of type {0}, but got {1}.</value>
+  </data>
 </root>

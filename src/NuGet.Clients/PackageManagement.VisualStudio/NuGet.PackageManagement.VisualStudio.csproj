@@ -110,7 +110,7 @@
     <When Condition="'$(VisualStudioVersion)' == '15.0'">
       <ItemGroup>
         <Reference Include="Microsoft.Build">
-          <HintPath>$(EnlistmentRoot)\packages\Microsoft.Build.15.1.262-preview5\lib\net46\Microsoft.Build.dll</HintPath>
+          <HintPath>$(EnlistmentRoot)\packages\Microsoft.Build.15.1.548\lib\net46\Microsoft.Build.dll</HintPath>
           <Private>False</Private>
         </Reference>
       </ItemGroup>
