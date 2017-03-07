@@ -3,13 +3,20 @@ using NuGet.Common;
 using System;
 using System.IO;
 using NuGet.ProjectModel;
+using System.Threading.Tasks;
+using NuGet.VisualStudio.Implementation;
 
 namespace NuGet.VisualStudio.Migration
 {
     public sealed class ProjectJsonMigrator
     {
         private readonly IMigrationRule _ruleSet;
-        public ProjectJsonMigrator() : this(new DefaultMigrationRuleSet()) { }
+        internal string AssetsFile { get; }
+        public ProjectJsonMigrator(string projectFile) : this(new DefaultMigrationRuleSet())
+        {
+            AssetsFile = ProjectJsonPathUtilities.GetProjectConfigPath(Path.GetDirectoryName(projectFile),
+                Path.GetFileNameWithoutExtension(projectFile));
+        }
 
         public ProjectJsonMigrator(IMigrationRule ruleSet)
         {
@@ -23,8 +30,8 @@ namespace NuGet.VisualStudio.Migration
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            var migrationRuleInputs = ComputeMigrationRuleInputs(settings);
-            _ruleSet.Apply(settings, migrationRuleInputs);
+            _ruleSet.Apply(settings, ComputeMigrationRuleInputs(settings));
+            
         }
 
         private MigrationRuleInputs ComputeMigrationRuleInputs(MigrationSettings migrationSettings)
@@ -45,12 +52,26 @@ namespace NuGet.VisualStudio.Migration
 
             var propertyGroup = templateMSBuildProject.AddPropertyGroup();
             var itemGroup = templateMSBuildProject.AddItemGroup();
-
-            var projectJsonFile = ProjectJsonPathUtilities.GetProjectConfigPath(migrationSettings.ProjectDirectory,
-                Path.GetFileNameWithoutExtension(inputProjFile));
-            var packageSpec = JsonPackageSpecReader.GetPackageSpec(Path.GetFileNameWithoutExtension(inputProjFile), projectJsonFile);
+            
+            var packageSpec = JsonPackageSpecReader.GetPackageSpec(Path.GetFileNameWithoutExtension(inputProjFile), AssetsFile);
 
             return new MigrationRuleInputs(templateMSBuildProject, itemGroup, propertyGroup, inputProjRoot, packageSpec);
+        }
+
+        internal IVsProjectJsonUpgradeResult CreateBackup(MigrationSettings settings)
+        {
+            var projectDirectory = Path.GetDirectoryName(settings.InputProjectFile);
+            var guid = new Guid().ToString();
+            var inputFileName = Path.GetFileName(settings.InputProjectFile);
+            var backupDirectory = Path.Combine(projectDirectory, $".backup.project.json.{guid}");
+            Directory.CreateDirectory(backupDirectory);
+
+            var backupProjectFile = Path.Combine(backupDirectory, inputFileName);
+            var backupAssetsFile = Path.Combine(backupDirectory, Path.GetFileName(AssetsFile));
+            File.Copy(settings.InputProjectFile, backupProjectFile);
+            File.Move(AssetsFile, backupAssetsFile);
+            return new VsProjectJsonUpgradeResult(backupProjectFile, backupAssetsFile);
+
         }
     }
 }

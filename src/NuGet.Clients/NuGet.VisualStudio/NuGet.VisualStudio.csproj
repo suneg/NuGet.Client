@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup Condition="'$(VisualStudioVersion)' == '15.0'">
     <Compile Include="Extensibility\IVsProjectJsonMigrator.cs" />
+    <Compile Include="Extensibility\IVsProjectJsonUpgradeResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="install.ps1" />

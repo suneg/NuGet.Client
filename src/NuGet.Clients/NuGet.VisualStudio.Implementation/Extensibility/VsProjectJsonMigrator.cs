@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using EnvDTE;
 using Microsoft.Build.Construction;
 using NuGet.VisualStudio.Migration;
+using NuGet.PackageManagement.UI;
+using Microsoft.VisualStudio.Threading;
 
 namespace NuGet.VisualStudio
 {
@@ -15,19 +17,29 @@ namespace NuGet.VisualStudio
     public sealed class VsProjectJsonMigrator : IVsProjectJsonMigrator
     {
         public string AssetsFile { get; private set; }
-        public bool UpgradeProject(string projectFile)
+        
+        public IVsProjectJsonUpgradeResult UpgradeProject(string projectFile)
         {
-            if (projectFile == null || !File.Exists(projectFile))
+            return NuGetUIThreadHelper.JoinableTaskFactory.Run<IVsProjectJsonUpgradeResult>(async delegate
             {
-                throw new FileNotFoundException();
-            }
-            var projectDirectory = Path.GetDirectoryName(projectFile);
-            var outputDirectory = projectDirectory;
-            var migrationSettings = new MigrationSettings(projectFile, projectDirectory, outputDirectory,
-                ProjectRootElement.Open(projectFile));
+                await TaskScheduler.Default;
+                if (projectFile == null || !File.Exists(projectFile))
+                {
+                    throw new FileNotFoundException();
+                }
 
-            new ProjectJsonMigrator().Migrate(migrationSettings);
-            return true;
+                var projectDirectory = Path.GetDirectoryName(projectFile);
+
+                var outputDirectory = projectDirectory;
+
+                var migrator = new ProjectJsonMigrator(projectFile);
+                var migrationSettings = new MigrationSettings(projectFile, projectDirectory, outputDirectory,
+                    ProjectRootElement.Open(projectFile));
+                var result = migrator.CreateBackup(migrationSettings);
+                migrator.Migrate(migrationSettings);
+                return result;
+            });
+            
         }
 
         public bool UpgradeProject(Project project)
