@@ -12,9 +12,6 @@
     <Guid>228F7591-2777-47D7-B81D-FEADFC71CEB5</Guid>
     <ComVisible>false</ComVisible>
   </PropertyGroup>
-  <ItemGroup Condition="'$(VisualStudioVersion)' == '14.0'">
-    <Reference Include="Microsoft.VisualStudio.ComponentModelHost, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-  </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -39,7 +36,6 @@
   <ItemGroup>
     <PackageReference Include="EnvDTE" Version="8.0.1" />
     <PackageReference Include="EnvDTE80" Version="8.0.1" />
-    <PackageReference Include="Microsoft.VisualStudio.ComponentModelHost" Version="15.0.26201" />
     <PackageReference Version="7.10.6070" Include="Microsoft.VisualStudio.OLE.Interop" />
     <PackageReference Version="7.10.6071" Include="Microsoft.VisualStudio.Shell.Interop" />
     <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.10.0" Version="10.0.30319" />

@@ -28,6 +28,7 @@
     <PackageReference Version="15.0.25604-Preview4" Include="Microsoft.VSSDK.BuildTools" />
     <PackageReference Version="15.0.691-master31907920" Include="Microsoft.VisualStudio.Telemetry" />
     <PackageReference Version="6.0.4" Include="Newtonsoft.Json" />
+    <PackageReference Include="Microsoft.VisualStudio.ComponentModelHost" Version="15.0.26201" />
   </ItemGroup>
   <Import Project="..\..\..\..\Build\Common.props" Condition="Exists('..\..\..\..\Build\Common.props')" />
   <Import Project="$(EnlistmentRoot)\build\sign.targets" />
