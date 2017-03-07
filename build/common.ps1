@@ -358,9 +358,6 @@ Function Build-ClientsProjectHelper {
 
     $buildArgs += "/p:VisualStudioVersion=${ToolsetVersion}.0"
     $restoreArgs += "/p:VisualStudioVersion=${ToolsetVersion}.0"
-    
-    $buildArgs += "/tv:${ToolsetVersion}.0"
-    $restoreArgs += "/tv:${ToolsetVersion}.0"
 
     $buildArgs += "/p:CreateNupkgs=true"
     $restoreArgs += "/p:CreateNupkgs=true"

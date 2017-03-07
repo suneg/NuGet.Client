@@ -114,18 +114,26 @@ Invoke-BuildStep 'Set delay signing options' {
     } `
     -ev +BuildErrors
 
-## Building the VS15 Tooling solution
-Invoke-BuildStep 'Building NuGet.sln - VS15 Toolset' {
-        $solutionPath = Join-Path $NuGetClientRoot NuGet.sln -Resolve
-        Build-ClientsProjectHelper `
-            -SolutionOrProject $solutionPath `
+    
+# Building the VS14 Tooling solution
+Invoke-BuildStep 'Building NuGet.sln - VS14 Toolset' {
+        Build-Solution `
             -Configuration $Configuration `
             -ReleaseLabel $ReleaseLabel `
             -BuildNumber $BuildNumber `
-            -Parameters @{'NUGET_PFX_PATH'=$NuGetPFXPath} `
+            -ToolsetVersion 14 `
+    } `
+    -skip:$SkipVS14 `
+    -ev +BuildErrors
+    
+    
+# Building the VS15 Tooling solution
+Invoke-BuildStep 'Building NuGet.sln - VS15 Toolset' {
+        Build-Solution `
+            -Configuration $Configuration `
+            -ReleaseLabel $ReleaseLabel `
+            -BuildNumber $BuildNumber `
             -ToolsetVersion 15 `
-            -IsSolution `
-            -Rebuild
     } `
     -skip:$SkipVS15 `
     -ev +BuildErrors
