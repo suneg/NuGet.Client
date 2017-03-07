@@ -90,6 +90,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>VsResources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Utility\Migration\Models\PackageDependencyInfo.cs" />
     <Compile Include="Utility\PumpingJTF.cs" />
     <Compile Include="Utility\XmlUtility.cs" />
     <Compile Include="VSAPIProjectContext.cs" />
@@ -106,7 +107,7 @@
     <Compile Include="Utility\Migration\ProjectJsonMigrator.cs" />
     <Compile Include="Utility\Migration\Rules\CleanOutputProjectRule.cs" />
     <Compile Include="Utility\Migration\Rules\IMigrationRule.cs" />
-    <Compile Include="Utility\Migration\Rules\MigrateJsonPropertiesRule.cs" />
+    <Compile Include="Utility\Migration\Rules\MigrateRootOptionsRule.cs" />
     <Compile Include="Utility\Migration\Rules\MigratePackageDependenciesAndToolsRule.cs" />
     <Compile Include="Utility\Migration\Rules\MigrateRuntimesRule.cs" />
     <Compile Include="Utility\Migration\Rules\SaveOutputProjectRule.cs" />

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Build.Construction;
+using NuGet.Frameworks;
 
 namespace NuGet.VisualStudio.Migration
 {
@@ -246,6 +247,53 @@ namespace NuGet.VisualStudio.Migration
             return elements
                 .Where(e => string.IsNullOrEmpty(e.Condition)
                             && e.AllParents.All(parent => string.IsNullOrEmpty(parent.Condition)));
+        }
+
+        public static IEnumerable<T> OrEmptyIfNull<T>(this IEnumerable<T> enumerable)
+        {
+            return enumerable == null
+                ? Enumerable.Empty<T>()
+                : enumerable;
+        }
+
+        public static string GetMSBuildCondition(this NuGetFramework framework)
+        {
+            return $" '$(TargetFramework)' == '{framework.GetTwoDigitShortFolderName()}' ";
+        }
+
+        public static string GetTwoDigitShortFolderName(this NuGetFramework self)
+        {
+            var original = self.GetShortFolderName();
+            var index = 0;
+            for (; index < original.Length; index++)
+            {
+                if (char.IsDigit(original[index]))
+                {
+                    break;
+                }
+            }
+
+            var versionPart = original.Substring(index);
+            if (versionPart.Length >= 2)
+            {
+                return original;
+            }
+
+            // Assume if the version part was preserved then leave it alone
+            if (versionPart.IndexOf('.') != -1)
+            {
+                return original;
+            }
+
+            var name = original.Substring(0, index);
+            var version = self.Version.ToString(2);
+
+            if (self.Framework.Equals(FrameworkConstants.FrameworkIdentifiers.NetPlatform))
+            {
+                return name + version;
+            }
+
+            return name + version.Replace(".", string.Empty);
         }
     }
 }

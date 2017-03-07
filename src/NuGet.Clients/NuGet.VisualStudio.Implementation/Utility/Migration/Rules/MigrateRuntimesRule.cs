@@ -6,11 +6,29 @@ using System.Threading.Tasks;
 
 namespace NuGet.VisualStudio.Migration
 {
-    class MigrateRuntimesRule : IMigrationRule
+    internal class MigrateRuntimesRule : IMigrationRule
     {
-        public void Apply(MigrationSettings migrationSettings, MigrationRuleInputs ruleInputs)
+        AddPropertyTransform<IList<string>> RuntimeIdentifiersTransform =>
+            new AddPropertyTransform<IList<string>>(
+                "RuntimeIdentifiers",
+                l => String.Join(";", l),
+                l => l.Count > 0);
+
+        private readonly ITransformApplicator _transformApplicator;
+
+        public MigrateRuntimesRule(ITransformApplicator transformApplicator = null)
         {
-            throw new NotImplementedException();
+            _transformApplicator = transformApplicator ?? new TransformApplicator();
+        }
+
+        public void Apply(MigrationSettings migrationSettings, MigrationRuleInputs migrationRuleInputs)
+        {
+            var propertyGroup = migrationRuleInputs.CommonPropertyGroup;
+
+            _transformApplicator.Execute(
+                RuntimeIdentifiersTransform.Transform(migrationRuleInputs.PackageSpec.RuntimeGraph.Runtimes.Select(t=> t.Key).ToList()),
+                propertyGroup,
+                mergeExisting: true);
         }
     }
 }
