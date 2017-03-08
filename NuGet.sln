@@ -176,10 +176,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NuGet.Console.Types", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NuGet.Console", "src\NuGet.Clients\VsConsole\Console\NuGet.Console.csproj", "{50E33DA2-AF14-486D-81B8-BD8409744A38}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NuGet.VisualStudio15.Packages", "src\NuGet.Clients\VisualStudio.Facade\VisualStudio15.Packages\NuGet.VisualStudio15.Packages.csproj", "{868ACCBA-B981-440D-9C98-2A235E1E861A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NuGet.VisualStudio14.Packages", "src\NuGet.Clients\VisualStudio.Facade\VisualStudio14.Packages\NuGet.VisualStudio14.Packages.csproj", "{A3AB10FD-0E3E-426B-B3D9-B5BF34E5D190}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -643,18 +639,6 @@ Global
 		{50E33DA2-AF14-486D-81B8-BD8409744A38}.Mono Release|Any CPU.Build.0 = Mono Release|Any CPU
 		{50E33DA2-AF14-486D-81B8-BD8409744A38}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50E33DA2-AF14-486D-81B8-BD8409744A38}.Release|Any CPU.Build.0 = Release|Any CPU
-		{868ACCBA-B981-440D-9C98-2A235E1E861A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{868ACCBA-B981-440D-9C98-2A235E1E861A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{868ACCBA-B981-440D-9C98-2A235E1E861A}.Mono Release|Any CPU.ActiveCfg = Mono Release|Any CPU
-		{868ACCBA-B981-440D-9C98-2A235E1E861A}.Mono Release|Any CPU.Build.0 = Mono Release|Any CPU
-		{868ACCBA-B981-440D-9C98-2A235E1E861A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{868ACCBA-B981-440D-9C98-2A235E1E861A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A3AB10FD-0E3E-426B-B3D9-B5BF34E5D190}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A3AB10FD-0E3E-426B-B3D9-B5BF34E5D190}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A3AB10FD-0E3E-426B-B3D9-B5BF34E5D190}.Mono Release|Any CPU.ActiveCfg = Mono Release|Any CPU
-		{A3AB10FD-0E3E-426B-B3D9-B5BF34E5D190}.Mono Release|Any CPU.Build.0 = Mono Release|Any CPU
-		{A3AB10FD-0E3E-426B-B3D9-B5BF34E5D190}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A3AB10FD-0E3E-426B-B3D9-B5BF34E5D190}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -736,7 +720,5 @@ Global
 		{5A79EEF3-51C0-4A14-8D37-50EF38AD835D} = {BD1946CE-5544-4F28-A04A-9C3D51113E1A}
 		{6FD11460-39A3-4A10-BA63-7541B0A7D053} = {BD1946CE-5544-4F28-A04A-9C3D51113E1A}
 		{50E33DA2-AF14-486D-81B8-BD8409744A38} = {BD1946CE-5544-4F28-A04A-9C3D51113E1A}
-		{868ACCBA-B981-440D-9C98-2A235E1E861A} = {BD1946CE-5544-4F28-A04A-9C3D51113E1A}
-		{A3AB10FD-0E3E-426B-B3D9-B5BF34E5D190} = {BD1946CE-5544-4F28-A04A-9C3D51113E1A}
 	EndGlobalSection
 EndGlobal
