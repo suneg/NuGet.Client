@@ -374,13 +374,13 @@ Function Build-ClientsProjectHelper {
         $restoreArgs += '/v:q'
     }
 
-    Trace-Log "$MSBuildExe $restoreArgs"
+    Trace-Log ". `"$MSBuildExe`" $restoreArgs"
     & $MSBuildExe $restoreArgs
     if (-not $?) {
         Error-Log "Restore of $SolutionOrProject failed. Code: $LASTEXITCODE"
     }
 
-    Trace-Log "$MSBuildExe $buildArgs"
+    Trace-Log ". `"$MSBuildExe`" $restoreArgs"
     & $MSBuildExe $buildArgs
     if (-not $?) {
         Error-Log "Build of $SolutionOrProject failed. Code: $LASTEXITCODE"
