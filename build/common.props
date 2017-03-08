@@ -6,6 +6,8 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">14.0</VisualStudioVersion>
+    <!-- Always use 15.0 since we cannot build on msbuild 14.0 -->
+    <NuGetTargets>$(MSBuildExtensionsPath)\Microsoft\NuGet\15.0\Microsoft.NuGet.targets</NuGetTargets>
   </PropertyGroup>
 
   <!--Build output setting-->
