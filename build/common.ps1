@@ -332,14 +332,17 @@ Function Build-ClientsProjectHelper {
         $buildArgs += "/t:Rebuild"
     }
 
-    if ($IsSolution -And $ToolsetVersion -eq 14) {
-        $buildArgs += "/p:Configuration=$Configuration VS14"
-        $restoreArgs += "/p:Configuration=$Configuration VS14"
-    }
-    else {
-        $buildArgs += "/p:Configuration=$Configuration"
-        $restoreArgs += "/p:Configuration=$Configuration"
-    }
+    #if ($IsSolution -And $ToolsetVersion -eq 14) {
+    #    $buildArgs += "/p:Configuration=$Configuration VS14"
+    #    $restoreArgs += "/p:Configuration=$Configuration VS14"
+    #}
+    #else {
+    #    $buildArgs += "/p:Configuration=$Configuration"
+    #    $restoreArgs += "/p:Configuration=$Configuration"
+    #}
+
+    $buildArgs += "/p:Configuration=$Configuration"
+    $restoreArgs += "/p:Configuration=$Configuration"
 
     $buildArgs += "/p:ReleaseLabel=$ReleaseLabel"
     $buildArgs += "/p:BuildNumber=$(Format-BuildNumber $BuildNumber)"
