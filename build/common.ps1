@@ -380,7 +380,7 @@ Function Build-ClientsProjectHelper {
         Error-Log "Restore of $SolutionOrProject failed. Code: $LASTEXITCODE"
     }
 
-    Trace-Log ". `"$MSBuildExe`" $restoreArgs"
+    Trace-Log ". `"$MSBuildExe`" $buildArgs"
     & $MSBuildExe $buildArgs
     if (-not $?) {
         Error-Log "Build of $SolutionOrProject failed. Code: $LASTEXITCODE"
