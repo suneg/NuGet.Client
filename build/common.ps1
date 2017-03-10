@@ -331,7 +331,7 @@ Function Build-ClientsProjectHelper {
     )
 
     Restore-SolutionOrProject `
-        -SolutionOrProject $solutionPath `
+        -SolutionOrProject $SolutionOrProject `
         -Configuration $Configuration `
         -ReleaseLabel $ReleaseLabel `
         -BuildNumber $BuildNumber `
@@ -340,7 +340,7 @@ Function Build-ClientsProjectHelper {
     
     
     Build-SolutionOrProject `
-        -SolutionOrProject $solutionPath `
+        -SolutionOrProject $SolutionOrProject `
         -Configuration $Configuration `
         -ReleaseLabel $ReleaseLabel `
         -BuildNumber $BuildNumber `
@@ -772,7 +772,7 @@ Function Test-XProjectCoreClr {
     }
 
     $opts += 'test', '--configuration', $Configuration
-    #$opts += '-- notrait Platform=Linux', '-- notrait Platform=Darwin'
+    $opts += '--', 'notrait', 'Platform=Linux', '--', 'notrait', 'Platform=Darwin'
 
     if ($VerbosePreference) {
         $opts += '-verbose'
@@ -840,7 +840,7 @@ Function Test-XProjectClr {
     }
 }
 
-Function Test-Project {
+Function Test-Projects {
     [CmdletBinding()]
     param(
         [parameter(ValueFromPipeline=$True, Mandatory=$True, Position=0)]
@@ -886,19 +886,10 @@ Function Test-CoreProjectsHelper {
     $coreTests = Find-Projects $TestProjectsLocation
     Restore-SolutionOrProject `
         -SolutionOrProject (Join-Path $NuGetClientRoot NuGet.Sln -Resolve) `
-        -Configuration $Configuration `
-        -ToolsetVersion 14.0
+        -Configuration $Configuration
         
     # Test all core test projects.
-    $coreTests | Test-Project -Configuration $Configuration
-    
-    Restore-SolutionOrProject `
-        -SolutionOrProject (Join-Path $NuGetClientRoot NuGet.Sln -Resolve) `
-        -Configuration $Configuration `
-        -ToolsetVersion 15.0
-        
-    # Test all core test projects.
-    $coreTests | Test-Project -Configuration $Configuration
+    $coreTests | Test-Projects -Configuration $Configuration
 }
 
 Function Publish-ClientsPackages {
