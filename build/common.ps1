@@ -213,6 +213,13 @@ Function Install-DotnetCLI {
             Version = '1.0.0-rc4-004788'
         }
     }
+    
+    if ([Environment]::Is64BitOperatingSystem) {
+        $arch = "x64";
+    }
+    else {
+        $arch = "x86";
+    }
 
     $env:DOTNET_HOME=$cli.Root
     $env:DOTNET_INSTALL_DIR=$NuGetClientRoot
@@ -226,7 +233,7 @@ Function Install-DotnetCLI {
 
         Invoke-WebRequest $cli.DotNetInstallUrl -OutFile $DotNetInstall
 
-        & $DotNetInstall -Channel preview -i $cli.Root -Version $cli.Version
+        & $DotNetInstall -Channel preview -i $cli.Root -Version $cli.Version -Architecture $arch
     }
 
     if (-not (Test-Path $cli.DotNetExe)) {
@@ -323,54 +330,75 @@ Function Build-ClientsProjectHelper {
         [switch]$Rebuild
     )
 
-    $buildArgs = , $SolutionOrProject
+    Restore-SolutionOrProject `
+        -SolutionOrProject $solutionPath `
+        -Configuration $Configuration `
+        -ReleaseLabel $ReleaseLabel `
+        -BuildNumber $BuildNumber `
+        -ToolsetVersion $ToolsetVersion `
+        -IsSolution `
+    
+    
+    Build-SolutionOrProject `
+        -SolutionOrProject $solutionPath `
+        -Configuration $Configuration `
+        -ReleaseLabel $ReleaseLabel `
+        -BuildNumber $BuildNumber `
+        -ToolsetVersion $ToolsetVersion `
+        -IsSolution `
+        -Rebuild
+}
+
+
+Function Restore-SolutionOrProject {
+    param(
+        [string]$SolutionOrProject,
+        [string]$Configuration = $DefaultConfiguration,
+        [string]$ReleaseLabel = $DefaultReleaseLabel,
+        [int]$BuildNumber = (Get-BuildNumber),
+        [ValidateSet(14,15)]
+        [int]$ToolsetVersion = $DefaultMSBuildVersion,
+        [hashtable]$Parameters,
+        [switch]$IsSolution,
+        [switch]$ExcludeBuildNumber
+    )
+
     $restoreArgs = , $SolutionOrProject
 
     $restoreArgs += "/t:Restore"
 
-    if ($Rebuild) {
-        $buildArgs += "/t:Rebuild"
-    }
-
     #if ($IsSolution -And $ToolsetVersion -eq 14) {
-    #    $buildArgs += "/p:Configuration=$Configuration VS14"
     #    $restoreArgs += "/p:Configuration=$Configuration VS14"
     #}
     #else {
-    #    $buildArgs += "/p:Configuration=$Configuration"
     #    $restoreArgs += "/p:Configuration=$Configuration"
     #}
 
-    $buildArgs += "/p:Configuration=$Configuration"
     $restoreArgs += "/p:Configuration=$Configuration"
-
-    $buildArgs += "/p:ReleaseLabel=$ReleaseLabel"
-    $buildArgs += "/p:BuildNumber=$(Format-BuildNumber $BuildNumber)"
-    $restoreArgs += "/p:ReleaseLabel=$ReleaseLabel"
-    $restoreArgs += "/p:BuildNumber=$(Format-BuildNumber $BuildNumber)"
-
+    
+    if ($ReleaseLabel) {
+        $restoreArgs += "/p:ReleaseLabel=$ReleaseLabel"
+    }
+    if ($BuildNumber) {
+        $restoreArgs += "/p:BuildNumber=$(Format-BuildNumber $BuildNumber)"
+    }
     if ($ExcludeBuildNumber) {
-        $buildArgs += "/p:ExcludeBuildNumber=true"
         $restoreArgs += "/p:ExcludeBuildNumber=true"
     }
-
     foreach($key in $Parameters.keys) {
-        $buildArgs +="/p:$key=" + $Parameters[$key]
         $restoreArgs +="/p:$key=" + $Parameters[$key]
     }
-
-    $buildArgs += "/p:VisualStudioVersion=${ToolsetVersion}.0"
-    $restoreArgs += "/p:VisualStudioVersion=${ToolsetVersion}.0"
-
-    $buildArgs += "/p:CreateNupkgs=true"
-    $restoreArgs += "/p:CreateNupkgs=true"
-
+    if ($ToolsetVersion) {
+        $restoreArgs += "/p:VisualStudioVersion=${ToolsetVersion}.0"
+    }    
+    if ($CreateNupkgs) {
+        $restoreArgs += "/p:CreateNupkgs=true"
+    }
+    
     # Parallel build
-    $buildArgs += "/m"
     $restoreArgs += "/m"
 
     if (-not $VerbosePreference) {
-        $buildArgs += '/v:m'
         $restoreArgs += '/v:q'
     }
 
@@ -379,6 +407,58 @@ Function Build-ClientsProjectHelper {
     if (-not $?) {
         Error-Log "Restore of $SolutionOrProject failed. Code: $LASTEXITCODE"
     }
+}
+
+
+Function Build-SolutionOrProject {
+    param(
+        [string]$SolutionOrProject,
+        [string]$Configuration = $DefaultConfiguration,
+        [string]$ReleaseLabel = $DefaultReleaseLabel,
+        [int]$BuildNumber = (Get-BuildNumber),
+        [ValidateSet(14,15)]
+        [int]$ToolsetVersion = $DefaultMSBuildVersion,
+        [hashtable]$Parameters,
+        [switch]$IsSolution,
+        [switch]$ExcludeBuildNumber,
+        [switch]$Rebuild
+    )
+
+    $buildArgs = , $SolutionOrProject
+
+    if ($Rebuild) {
+        $buildArgs += "/t:Rebuild"
+    }
+
+    #if ($IsSolution -And $ToolsetVersion -eq 14) {
+    #    $buildArgs += "/p:Configuration=$Configuration VS14"
+    #}
+    #else {
+    #    $buildArgs += "/p:Configuration=$Configuration"
+    #}
+
+    $buildArgs += "/p:Configuration=$Configuration"
+    $buildArgs += "/p:ReleaseLabel=$ReleaseLabel"
+    $buildArgs += "/p:BuildNumber=$(Format-BuildNumber $BuildNumber)"
+
+    if ($ExcludeBuildNumber) {
+        $buildArgs += "/p:ExcludeBuildNumber=true"
+    }
+
+    foreach($key in $Parameters.keys) {
+        $buildArgs +="/p:$key=" + $Parameters[$key]
+    }
+
+    $buildArgs += "/p:VisualStudioVersion=${ToolsetVersion}.0"
+
+    $buildArgs += "/p:CreateNupkgs=true"
+
+    # Parallel build
+    $buildArgs += "/m"
+
+    if (-not $VerbosePreference) {
+        $buildArgs += '/v:m'
+    }
 
     Trace-Log ". `"$MSBuildExe`" $buildArgs"
     & $MSBuildExe $buildArgs
@@ -386,6 +466,7 @@ Function Build-ClientsProjectHelper {
         Error-Log "Build of $SolutionOrProject failed. Code: $LASTEXITCODE"
     }
 }
+
 
 Function Test-BuildEnvironment {
     [CmdletBinding()]
@@ -464,14 +545,14 @@ Function Set-DelaySigning {
     )
 
     if ($MSPFXPath -and (Test-Path $MSPFXPath)) {
-        Trace-Log "Setting NuGet.Core solution to delay sign using $MSPFXPath"
+        Trace-Log "Setting NuGet.Core projects to delay sign using $MSPFXPath"
 
         Trace-Log "Using the Microsoft Key for NuGet Command line $MSPFXPath"
         $env:MS_PFX_PATH=$MSPFXPath
 
-        $XProjectsLocation = Join-Path $NuGetClientRoot '\src\NuGet.Core'
-        Trace-Log "Adding KeyFile '$MSPFXPath' to project files in '$XProjectsLocation'"
-        (Get-ChildItem $XProjectsLocation -rec -Filter 'project.json') |
+        $coreProjectsLocation = Join-Path $NuGetClientRoot '\src\NuGet.Core'
+        Trace-Log "Adding KeyFile '$MSPFXPath' to project files in '$coreProjectsLocation'"
+        (Get-ChildItem $coreProjectsLocation -rec -Filter 'project.json') |
             %{ $_.FullName } |
             %{
                 Verbose-Log "Processing '$_'"
@@ -490,7 +571,7 @@ Function Set-DelaySigning {
     }
 
     if ($NuGetPFXPath -and (Test-Path $NuGetPFXPath)) {
-        Trace-Log "Setting NuGet.Clients solution to delay sign using $NuGetPFXPath"
+        Trace-Log "Setting NuGet.Clients projects to delay sign using $NuGetPFXPath"
         $env:NUGET_PFX_PATH= $NuGetPFXPath
     }
     else {
@@ -565,35 +646,43 @@ Function Restore-SolutionPackages{
     }
 }
 
-# Restore nuget.core.sln projects
-Function Restore-XProjects {
+# Restore test projects
+Function Restore-TestProjects {
     [CmdletBinding()]
     param(
         [parameter(ValueFromPipeline=$True, Mandatory=$True, Position=0)]
-        [string[]]$XProjectLocations
+        [string[]]$projectLocations
     )
-    end {
-        $xprojects = $Input | Join-Path -ChildPath project.json -Resolve
-        $xprojects | %{
-            $opts = 'restore', $_
-            if (-not $VerbosePreference) {
-                $opts += '--verbosity', 'minimal'
-            } else {
-                $opts += '--verbosity', 'information'
-            }
-
+    $projectLocations | %{
+        Write-Host "Restoring Test project $_"
+        
+        pushd $_
+        
+        $opts = , 'msbuild'
+        $opts += '/t:restore'
+        if (-not $VerbosePreference) {
+            $opts += '/v:q'
+        } else {
+            $opts += '/v:m'
+        }
+        
+        try {
             Trace-Log "$DotNetExe $opts"
             & $DotNetExe $opts
             if (-not $?) {
                 Error-Log "Restore failed @""$_"". Code: $LASTEXITCODE"
             }
         }
+        finally {
+            popd
+        }
     }
 }
 
+
 Function Find-Projects([string]$ProjectsLocation) {
     Get-ChildItem $ProjectsLocation -Recurse -Filter '*.csproj' |
-        %{ Split-Path $_.FullName -Parent }
+        %{ if(-Not($_.FullName -match "compiler\\resources")) {Split-Path $_.FullName -Parent} }
 }
 
 Function Publish-CoreProject {
@@ -673,14 +762,17 @@ Function Test-XProjectCoreClr {
         [string]$XProjectLocation,
         [string]$Configuration = $DefaultConfiguration
     )
+    
+    Write-Host "Testing $XProjectLocation"
+    
     $opts = @()
 
     if ($VerbosePreference) {
         $opts += '-v'
     }
 
-    $opts += 'test', '--configuration', $Configuration, '--framework', 'netcoreapp1.0'
-    $opts += '-notrait', 'Platform=Linux', '-notrait', 'Platform=Darwin'
+    $opts += 'test', '--configuration', $Configuration
+    #$opts += '-- notrait Platform=Linux', '-- notrait Platform=Darwin'
 
     if ($VerbosePreference) {
         $opts += '-verbose'
@@ -748,35 +840,17 @@ Function Test-XProjectClr {
     }
 }
 
-Function Test-XProject {
+Function Test-Project {
     [CmdletBinding()]
     param(
         [parameter(ValueFromPipeline=$True, Mandatory=$True, Position=0)]
-        [string[]]$XProjectLocations,
+        [string[]]$ProjectLocations,
         [string]$Configuration = $DefaultConfiguration
     )
     Process {
-        $XProjectLocations | Resolve-Path | %{
-            $xtestProjectJson = Join-Path $_ project.json -Resolve
-            $xproject = gc $xtestProjectJson -raw | ConvertFrom-Json
-
-            if ($xproject.testRunner) {
-                Trace-Log "Running tests in ""$_"""
-
-                # Check if netcoreapp1.0 exists in the project.json file
-                if ($xproject.frameworks.'netcoreapp1.0') {
-                    # Run tests for Core CLR
-                    Test-XProjectCoreClr $_ $Configuration
-                }
-
-                # Run tests for CLR
-                if ($xproject.frameworks.net46) {
-                    Test-XProjectClr $_ $Configuration
-                }
-            }
-            else {
-                Trace-Log "Skipping non-test project in ""$_"""
-            }
+        $ProjectLocations | Resolve-Path | %{
+            
+            Test-XProjectCoreClr $_ $Configuration
         }
     }
 }
@@ -786,8 +860,8 @@ Function Test-CoreProjects {
     param(
         [string]$Configuration = $DefaultConfiguration
     )
-    $XProjectsLocation = Join-Path $NuGetClientRoot test\NuGet.Core.Tests
-    Test-CoreProjectsHelper $Configuration $XProjectsLocation
+    $coreTestsProjectsLocation = Join-Path $NuGetClientRoot test\NuGet.Core.Tests
+    Test-CoreProjectsHelper $Configuration $coreTestsProjectsLocation
 }
 
 Function Test-FuncCoreProjects {
@@ -795,25 +869,36 @@ Function Test-FuncCoreProjects {
     param(
         [string]$Configuration = $DefaultConfiguration
     )
-    $XProjectsLocation = Join-Path $NuGetClientRoot test\NuGet.Core.FuncTests
-    Test-CoreProjectsHelper $Configuration $XProjectsLocation
+    $coreTestsProjectsLocation = Join-Path $NuGetClientRoot test\NuGet.Core.FuncTests
+    Test-CoreProjectsHelper $Configuration $coreTestsProjectsLocation
 }
 
 Function Test-CoreProjectsHelper {
     [CmdletBinding()]
     param(
         [string]$Configuration,
-        [string]$XProjectsLocation
+        [string]$TestProjectsLocation
     )
 
     # Restore both src and test core projects.
     $srcLocation = Join-Path $NuGetClientRoot src\NuGet.Core -Resolve
-    $xprojs = Find-XProjects $srcLocation
-    $xtests = Find-XProjects $XProjectsLocation
-    $xprojs + $xtests | Restore-XProjects
-
+    $coreProjs = Find-Projects $srcLocation
+    $coreTests = Find-Projects $TestProjectsLocation
+    Restore-SolutionOrProject `
+        -SolutionOrProject (Join-Path $NuGetClientRoot NuGet.Sln -Resolve) `
+        -Configuration $Configuration `
+        -ToolsetVersion 14.0
+        
     # Test all core test projects.
-    $xtests | Test-XProject -Configuration $Configuration
+    $coreTests | Test-Project -Configuration $Configuration
+    
+    Restore-SolutionOrProject `
+        -SolutionOrProject (Join-Path $NuGetClientRoot NuGet.Sln -Resolve) `
+        -Configuration $Configuration `
+        -ToolsetVersion 15.0
+        
+    # Test all core test projects.
+    $coreTests | Test-Project -Configuration $Configuration
 }
 
 Function Publish-ClientsPackages {
