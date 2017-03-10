@@ -756,20 +756,17 @@ Function Pack-NuGetBuildTasksPack {
     }
 }
 
-Function Test-XProjectCoreClr {
+Function Test-ProjectDotnet {
     [CmdletBinding()]
     param(
         [string]$XProjectLocation,
-        [string]$Configuration = $DefaultConfiguration
+        [string]$Configuration = $DefaultConfiguration,
+        [string]$ToolsetVersion
     )
     
     Write-Host "Testing $XProjectLocation"
     
     $opts = @()
-
-    if ($VerbosePreference) {
-        $opts += '-v'
-    }
 
     $opts += 'test', '--configuration', $Configuration
     $opts += '--', 'notrait', 'Platform=Linux', '--', 'notrait', 'Platform=Darwin'
@@ -777,7 +774,10 @@ Function Test-XProjectCoreClr {
     if ($VerbosePreference) {
         $opts += '-verbose'
     }
-
+    
+    if($ToolsetVersion) {
+        $opts += '-ToolsetVersion', $ToolsetVersion
+    }
     pushd $XProjectLocation
 
     try {
@@ -840,7 +840,7 @@ Function Test-XProjectClr {
     }
 }
 
-Function Test-Projects {
+Function Execute-Tests {
     [CmdletBinding()]
     param(
         [parameter(ValueFromPipeline=$True, Mandatory=$True, Position=0)]
@@ -850,46 +850,41 @@ Function Test-Projects {
     Process {
         $ProjectLocations | Resolve-Path | %{
             
-            Test-XProjectCoreClr $_ $Configuration
+            Test-ProjectDotnet $_ $Configuration
         }
     }
 }
 
-Function Test-CoreProjects {
+Function Test-Projects {
     [CmdletBinding()]
     param(
-        [string]$Configuration = $DefaultConfiguration
+        [string]$Configuration = $DefaultConfiguration,
+        [Parameter(Mandatory=$true)]
+        [string]$TestType
     )
-    $coreTestsProjectsLocation = Join-Path $NuGetClientRoot test\NuGet.Core.Tests
-    Test-CoreProjectsHelper $Configuration $coreTestsProjectsLocation
+    $TestRoot = Join-Path (Join-Path $NuGetClientRoot test) $TestType -Resolve
+    Test-ProjectsHelper $Configuration $TestRoot
 }
 
-Function Test-FuncCoreProjects {
-    [CmdletBinding()]
-    param(
-        [string]$Configuration = $DefaultConfiguration
-    )
-    $coreTestsProjectsLocation = Join-Path $NuGetClientRoot test\NuGet.Core.FuncTests
-    Test-CoreProjectsHelper $Configuration $coreTestsProjectsLocation
-}
-
-Function Test-CoreProjectsHelper {
+Function Test-ProjectsHelper {
     [CmdletBinding()]
     param(
         [string]$Configuration,
-        [string]$TestProjectsLocation
+        [string]$TestRoot
     )
 
-    # Restore both src and test core projects.
-    $srcLocation = Join-Path $NuGetClientRoot src\NuGet.Core -Resolve
-    $coreProjs = Find-Projects $srcLocation
-    $coreTests = Find-Projects $TestProjectsLocation
-    Restore-SolutionOrProject `
-        -SolutionOrProject (Join-Path $NuGetClientRoot NuGet.Sln -Resolve) `
-        -Configuration $Configuration
-        
+    # # Restore both src and test core projects.
+    # $srcLocation = Join-Path $NuGetClientRoot src\NuGet.Core -Resolve
+    # $coreProjs = Find-Projects $srcLocation
+    
+    # Restore-SolutionOrProject `
+        # -SolutionOrProject (Join-Path $NuGetClientRoot NuGet.Sln -Resolve) `
+        # -Configuration $Configuration
+    
+    $TestProjects = Find-Projects $TestRoot
+    
     # Test all core test projects.
-    $coreTests | Test-Projects -Configuration $Configuration
+    $TestProjects | Execute-Tests -Configuration $Configuration
 }
 
 Function Publish-ClientsPackages {
@@ -1076,7 +1071,7 @@ Function Test-ClientsProjectsHelper {
     $TestProjects = Get-ChildItem $TestProjectsLocation -Recurse -Filter '*.csproj' -Exclude $ExcludeFilter |
         %{ $_.FullName }
 
-    $TestProjects | Test-ClientProject -Configuration $Configuration -ToolsetVersion $ToolsetVersion -CI:$CI
+    $TestProjects | Test-Projects -Configuration $Configuration -ToolsetVersion $ToolsetVersion -CI:$CI
 }
 
 Function Test-ClientProject {
