@@ -46,5 +46,5 @@
     <PackageReference Include="xunit" Version="2.2.0" />
   </ItemGroup>
 
-  <Import Project="..\..\..\build\common.core.targets"/>
+  <Import Project="..\..\..\build\common.core.targets" />
 </Project>

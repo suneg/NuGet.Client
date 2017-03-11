@@ -10,10 +10,6 @@
     <ProjectReference Include="..\..\..\src\NuGet.Core\NuGet.Configuration\NuGet.Configuration.csproj" />
     <ProjectReference Include="..\..\..\src\NuGet.Core\NuGet.Test.Utility\NuGet.Test.Utility.csproj" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <PackageReference Include="Moq" Version="4.7.1" />
-  </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">
     <PackageReference Include="System.Diagnostics.TraceSource" Version="4.0.0" />

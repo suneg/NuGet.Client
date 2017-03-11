@@ -11,8 +11,8 @@ namespace NuGet.Test.Utility
     /// </summary>
     [TraitDiscoverer("NuGet.Test.Utility.PlatformDiscoverer", "NuGet.Test.Utility")]
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class PlatformAttribute : Attribute, ITraitAttribute
+    public class PlatformFactAttribute : Attribute, ITraitAttribute
     {
-        public PlatformAttribute(string platform) { }
+        public PlatformFactAttribute(string platform) { }
     }
 }
